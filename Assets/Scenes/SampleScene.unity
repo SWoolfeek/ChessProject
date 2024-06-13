@@ -693,7 +693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 150620fb28c31094197b22275cd46da0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellSize: 10
+  cellSize: 2
   _gridSize: 8
   material: {fileID: 2100000, guid: fc1c532538872154b9b4e11ab3644857, type: 2}
 --- !u!1 &1652162815
