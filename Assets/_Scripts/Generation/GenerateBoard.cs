@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class GenerateBoard : MonoBehaviour
 {
-    [SerializeField] private float cellSize;
-    [SerializeField] private int _gridSize = 8;
+    [SerializeField] private BoardParameters boardParameters;
 
     [SerializeField] private Material material;
     
@@ -17,7 +16,7 @@ public class GenerateBoard : MonoBehaviour
     private Vector2[] _uv;
     
     // Start is called before the first frame update
-    void Start()
+    public void StartBoardGeneration()
     {
         MeshRenderer meshRenderer = gameObject.AddComponent<MeshRenderer>();
         meshRenderer.sharedMaterial = material;
@@ -40,13 +39,13 @@ public class GenerateBoard : MonoBehaviour
 
     private void GenerateVertices()
     {
-        int verticesAmount = (_gridSize + 1)*(_gridSize + 1);
+        int verticesAmount = (boardParameters.gridSize + 1)*(boardParameters.gridSize + 1);
         
         for (int i = 0; i < verticesAmount; i++)
         {
-            int row = i / (_gridSize + 1);
-            int column = i % (_gridSize + 1);
-            _vertices.Add(_startingPoint + Vector3.forward * row * cellSize + Vector3.right * column * cellSize);
+            int row = i / (boardParameters.gridSize + 1);
+            int column = i % (boardParameters.gridSize + 1);
+            _vertices.Add(_startingPoint + Vector3.forward * row * boardParameters.cellSize + Vector3.right * column * boardParameters.cellSize);
         }
         
         Debug.Log("Vertices - " + _vertices);
@@ -54,21 +53,21 @@ public class GenerateBoard : MonoBehaviour
 
     private void GenerateTris()
     {
-        for (int i = 0; i < (_gridSize * _gridSize); i++)
+        for (int i = 0; i < (boardParameters.gridSize * boardParameters.gridSize); i++)
         {
-            int row = i / (_gridSize);
-            int column = i % (_gridSize);
+            int row = i / (boardParameters.gridSize);
+            int column = i % (boardParameters.gridSize);
             
             //First tris
-            _tris.Add(0 + column + row * (_gridSize + 1));
-            _tris.Add(_gridSize + column + 1 + row * (_gridSize + 1));
-            _tris.Add(1 + column + row * (_gridSize + 1));
+            _tris.Add(0 + column + row * (boardParameters.gridSize + 1));
+            _tris.Add(boardParameters.gridSize + column + 1 + row * (boardParameters.gridSize + 1));
+            _tris.Add(1 + column + row * (boardParameters.gridSize + 1));
             
             
             //Second tris
-            _tris.Add(_gridSize + column + 1 + row * (_gridSize + 1));
-            _tris.Add(_gridSize + column + 2 + row * (_gridSize + 1));
-            _tris.Add(1 + column + row * (_gridSize + 1));
+            _tris.Add(boardParameters.gridSize + column + 1 + row * (boardParameters.gridSize + 1));
+            _tris.Add(boardParameters.gridSize + column + 2 + row * (boardParameters.gridSize + 1));
+            _tris.Add(1 + column + row * (boardParameters.gridSize + 1));
             
             print("Row - " + row + " Column - " + column);
         }
@@ -76,7 +75,7 @@ public class GenerateBoard : MonoBehaviour
 
     private void GenerateNormals()
     {
-        for (int i = 0; i < (_gridSize + 1)*(_gridSize + 1); i++)
+        for (int i = 0; i < (boardParameters.gridSize + 1)*(boardParameters.gridSize + 1); i++)
         {
             _normals.Add(-Vector3.up);
         }
@@ -86,7 +85,7 @@ public class GenerateBoard : MonoBehaviour
     {
         _uv = new Vector2[_vertices.Count];
 
-        float multiplier = 1 / (cellSize * _gridSize);
+        float multiplier = 1 / (boardParameters.cellSize * boardParameters.gridSize);
         
         for (int i = 0; i < _uv.Length; i++)
         {
