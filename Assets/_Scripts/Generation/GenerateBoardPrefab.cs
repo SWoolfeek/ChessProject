@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
+#endif
 
 public class GenerateBoardPrefab : MonoBehaviour
 {
+    
+#if UNITY_EDITOR
     [SerializeField] public BoardParameters parameters;
 
     [SerializeField] public List<GameObject> cellPrefabs;
@@ -42,7 +45,6 @@ public class GenerateBoardPrefab : MonoBehaviour
         int column = 0;
         int prefabIndex = 0;
         
-        parameters.ClearData();
         
         for (int i = 0; i < (parameters.gridSize*parameters.gridSize); i++)
         {
@@ -63,11 +65,24 @@ public class GenerateBoardPrefab : MonoBehaviour
             cell.transform.position = positionToSpawn;
             cell.transform.parent = transform;
             cell.name = Letters[row].ToString() + (column + 1).ToString();
-            parameters.AddBoardCellData(cell.name, cell);
         }
     }
-}
 #endif
+
+
+    public Dictionary<string, GameObject> ReadExistedCells()
+    {
+        Dictionary<string, GameObject> result = new Dictionary<string, GameObject>();
+        
+        Transform[] childrens = transform.GetComponentsInChildren<Transform>(true);
+        for (int i = 1; i < childrens.Length; i++)
+        {
+            result.Add(childrens[i].name, childrens[i].gameObject);
+        }
+
+        return result;
+    }
+}
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(GenerateBoardPrefab))]

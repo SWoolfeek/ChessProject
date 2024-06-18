@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,13 @@ using UnityEngine;
 public class ChessPiece : MonoBehaviour
 {
     [SerializeField] private ChessColour team;
+
+    protected bool _firstTurn = true;
+    protected string _position;
+    protected const string Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    protected List<string> positionToMove;
+    protected Action calculateMovement;
     
     // Start is called before the first frame update
     void Start()
@@ -18,6 +26,18 @@ public class ChessPiece : MonoBehaviour
         
     }
 
+    public void MoveTo(string position)
+    {
+        _position = position;
+        _firstTurn = false;
+    }
+
+
+    public void SetChess(string position)
+    {
+        _position = position;
+    }
+
     public bool CheckTeam(ChessColour inputTeam)
     {
         if (team == inputTeam && !ChessCheck())
@@ -26,6 +46,13 @@ public class ChessPiece : MonoBehaviour
         }
 
         return false;
+    }
+
+    public List<string> CalculateMovement()
+    {
+        calculateMovement.Invoke();
+        
+        return positionToMove;
     }
 
     private bool ChessCheck()

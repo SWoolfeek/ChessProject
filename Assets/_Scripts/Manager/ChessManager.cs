@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,21 +6,41 @@ using UnityEngine;
 public class ChessManager : MonoBehaviour
 {
     [SerializeField] private BoardParameters boardParameters;
+    [SerializeField] private GenerateBoardPrefab boardGenerator;
 
     [SerializeField] private GameObject whitePawn;
     [SerializeField] private GameObject blackPawn;
+    
+    public static ChessManager Instance { get; private set; }
+
+    private static Dictionary<string, GameObject> _cells;
     
     private Dictionary<int[,], ChessPiece> chess = new Dictionary<int[,], ChessPiece>();
 
     private ChessPiece _chosenChess;
 
     private ChessData rozkladka;
-    
-    
+
+    private static bool _pickedChess;
+    private static string _pickedChessName;
+    private static List<string> _calculatedPath;
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+           Debug.LogError("Instance ChessManager already exists!");
+           Destroy(gameObject);
+           return;
+        }
+
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        boardParameters.GenerateDictionary();
+        _cells = boardGenerator.ReadExistedCells();
         
         //Manual testing.
         rozkladka = new ChessData();
@@ -99,14 +120,50 @@ public class ChessManager : MonoBehaviour
         switch (colour)
         {
             case ChessColour.White:
-                createdChess = Instantiate(whitePawn, boardParameters.boardCells[inputPosition.position].transform);
-                boardParameters.boardCells[inputPosition.position].GetComponent<BoardCell>().chess = createdChess;
+                createdChess = Instantiate(whitePawn, _cells[inputPosition.position].transform);
+                _cells[inputPosition.position].GetComponent<BoardCell>().SetChess(createdChess);
+                createdChess.GetComponent<ChessPiece>().SetChess(inputPosition.position);
                 break;
             case ChessColour.Black:
-                createdChess = Instantiate(blackPawn, boardParameters.boardCells[inputPosition.position].transform);
-                boardParameters.boardCells[inputPosition.position].GetComponent<BoardCell>().chess = createdChess;
+                createdChess = Instantiate(blackPawn, _cells[inputPosition.position].transform);
+                _cells[inputPosition.position].GetComponent<BoardCell>().SetChess(createdChess);
+                createdChess.GetComponent<ChessPiece>().SetChess(inputPosition.position);
                 break;
         }
+    }
+
+    public static void ChessWasChosen(string cell, List<string> path)
+    {
+        Debug.Log("With chess = true");
+        _pickedChess = true;
+        _pickedChessName = cell;
+        _calculatedPath = path;
+    }
+
+    public static void CellWasChosen(string cell)
+    {
+        if (_pickedChess)
+        {
+            
+            if (_calculatedPath.Contains(cell))
+            {
+                Debug.Log("move chess");
+                _cells[_pickedChessName].GetComponent<BoardCell>().MoveTo(_cells[cell]);
+                _pickedChess = false;
+            }
+            else
+            {
+                Debug.Log("Wrong path");
+            }
+            
+        }
+        else
+        {
+            Debug.Log("With chess = false");
+            _pickedChess = false;
+            _pickedChessName = cell;
+        }
+        
     }
 
     public void AddChess(Vector3 position, ChessPiece chessController)
