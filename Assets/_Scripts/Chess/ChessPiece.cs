@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class ChessPiece : MonoBehaviour
 {
-    [SerializeField] private ChessColour team;
+    [SerializeField] protected ChessColour team;
+    [SerializeField] protected BoardParameters boardParameters;
 
     protected bool _firstTurn = true;
     protected string _position;

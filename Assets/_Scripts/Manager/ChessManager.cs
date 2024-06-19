@@ -1,29 +1,32 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ChessManager : MonoBehaviour
 {
     [SerializeField] private BoardParameters boardParameters;
-    [SerializeField] private GenerateBoardPrefab boardGenerator;
 
-    [SerializeField] private GameObject whitePawn;
-    [SerializeField] private GameObject blackPawn;
+    [Header("Chess Pick colours")] 
+    [SerializeField] private Color possibleTurnColor;
+    [ColorUsage(true, true)]
+    [SerializeField] private Color possibleTurnEmission;
+    [SerializeField] private Color possibleEliminationColor;
+    [ColorUsage(true, true)]
+    [SerializeField] private Color possibleEliminationEmission;
     
-    public static ChessManager Instance { get; private set; }
-
-    private static Dictionary<string, GameObject> _cells;
+    public ChessManager Instance { get; private set; }
     
-    private Dictionary<int[,], ChessPiece> chess = new Dictionary<int[,], ChessPiece>();
 
-    private ChessPiece _chosenChess;
+    private Dictionary<string, GameObject> _cells;
+    
+    private bool _pickedChess;
+    private string _pickedChessName;
+    private List<string> _calculatedPath;
 
-    private ChessData rozkladka;
-
-    private static bool _pickedChess;
-    private static string _pickedChessName;
-    private static List<string> _calculatedPath;
+    private List<GameObject> _activePossibleTurnObjects = new List<GameObject>();
+    private List<GameObject> _inactivePossibleTurnObjects = new List<GameObject>();
 
     private void Awake()
     {
@@ -35,112 +38,36 @@ public class ChessManager : MonoBehaviour
         }
 
         Instance = this;
+        
+        GlobalGameEventManager.OnChesChooseEvent.AddListener(ChessWasChosen);
+        GlobalGameEventManager.OnCellChooseEvent.AddListener(CellWasChosen);
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
-        _cells = boardGenerator.ReadExistedCells();
-        
-        //Manual testing.
-        rozkladka = new ChessData();
-        
-        ChessTurn whiteTurn = new ChessTurn();
-
-        List<ChessPosition> whitePositions = new List<ChessPosition>();
-
-        ChessPosition a1 = new ChessPosition();
-        a1.position = "A1";
-        a1.chess = ChessType.Pawn;
-        whitePositions.Add(a1);
-        ChessPosition a2 = new ChessPosition();
-        a2.position = "A2";
-        a2.chess = ChessType.Pawn;
-        whitePositions.Add(a2);
-        ChessPosition b1 = new ChessPosition();
-        b1.position = "B1";
-        b1.chess = ChessType.Pawn;
-        whitePositions.Add(b1);
-        ChessPosition b2 = new ChessPosition();
-        b2.position = "B2";
-        b2.chess = ChessType.Pawn;
-        whitePositions.Add(b2);
-        
-        whiteTurn.SetChessTurn(0,ChessColour.White, whitePositions);
-        
-        ChessTurn blackTurn = new ChessTurn();
-        
-        List<ChessPosition> blackPositions = new List<ChessPosition>();
-
-        ChessPosition h1 = new ChessPosition();
-        h1.position = "H1";
-        h1.chess = ChessType.Pawn;
-        blackPositions.Add(h1);
-        
-        ChessPosition h2 = new ChessPosition();
-        h2.position = "H2";
-        h2.chess = ChessType.Pawn;
-        blackPositions.Add(h2);
-        ChessPosition g1 = new ChessPosition();
-        g1.position = "G1";
-        g1.chess = ChessType.Pawn;
-        blackPositions.Add(g1);
-        ChessPosition g2 = new ChessPosition();
-        g2.position = "G2";
-        g2.chess = ChessType.Pawn;
-        blackPositions.Add(g2);
-        
-        blackTurn.SetChessTurn(0, ChessColour.Black,blackPositions);
-        
-        rozkladka.chessTurns.Add(new List<ChessTurn>() {whiteTurn, blackTurn});
-
-        foreach (List<ChessTurn> turn in rozkladka.chessTurns)
-        {
-            foreach (ChessTurn i in turn)
-            {
-                foreach (ChessPosition position in i.chessPosition)
-                {
-                    CreateChess(position, i.team);
-                }
-            }
-        }
-            
-        //End testing.
-    }
-
-    // Update is called once per frame
-    void Update()
+    public void StartChessManager()
     {
         
     }
 
-    private void CreateChess(ChessPosition inputPosition, ChessColour colour)
+    public void SetBoard(Dictionary<string, GameObject> input)
     {
-        GameObject createdChess;
-        switch (colour)
-        {
-            case ChessColour.White:
-                createdChess = Instantiate(whitePawn, _cells[inputPosition.position].transform);
-                _cells[inputPosition.position].GetComponent<BoardCell>().SetChess(createdChess);
-                createdChess.GetComponent<ChessPiece>().SetChess(inputPosition.position);
-                break;
-            case ChessColour.Black:
-                createdChess = Instantiate(blackPawn, _cells[inputPosition.position].transform);
-                _cells[inputPosition.position].GetComponent<BoardCell>().SetChess(createdChess);
-                createdChess.GetComponent<ChessPiece>().SetChess(inputPosition.position);
-                break;
-        }
+        _cells = input;
     }
 
-    public static void ChessWasChosen(string cell, List<string> path)
+    private void ChessWasChosen(string cell, List<string> path)
     {
         Debug.Log("With chess = true");
         _pickedChess = true;
         _pickedChessName = cell;
         _calculatedPath = path;
+
+        foreach (string position in path)
+        {
+            ShowPossibleTurn(position);
+        }
     }
 
-    public static void CellWasChosen(string cell)
+    private void CellWasChosen(string cell)
     {
         if (_pickedChess)
         {
@@ -163,47 +90,69 @@ public class ChessManager : MonoBehaviour
             _pickedChess = false;
             _pickedChessName = cell;
         }
-        
+
+        DisablePossibleTurn();
+
     }
 
-    public void AddChess(Vector3 position, ChessPiece chessController)
+    private void PossibleTurnColor(string position, GameObject possiblePositionObject)
     {
-        if (!chess.ContainsKey(CalculateBoardPosition(position)))
+        bool[] checkResult = GameManager.CheckChess(GlobalGameVariables.ChessTurn, position);
+        
+        Material material = possiblePositionObject.transform.GetComponentsInChildren<Transform>(true)[1]
+            .GetComponent<MeshRenderer>().material;
+
+        if (checkResult[0] && !checkResult[1])
         {
-            chess.Add(CalculateBoardPosition(position), chessController); 
+            material.color = possibleEliminationColor;
+            material.SetColor("_Emission", possibleEliminationEmission);
         }
         else
         {
-            Debug.LogError("Chess for this position was already added!!!");
+            material.color = possibleTurnColor;
+            material.SetColor("_Emission", possibleTurnEmission);
+        }
+    }
+
+    private void ShowPossibleTurn(string cellPosition)
+    {
+        if (_inactivePossibleTurnObjects.Count > 0)
+        {
+            _inactivePossibleTurnObjects[0].transform.position = _cells[cellPosition].transform.position;
+            _inactivePossibleTurnObjects[0].SetActive(true);
+            
+            _activePossibleTurnObjects.Add(_inactivePossibleTurnObjects[0]);
+
+            PossibleTurnColor(cellPosition, _inactivePossibleTurnObjects[0]);
+            
+            _inactivePossibleTurnObjects.RemoveAt(0);
+        }
+        else
+        {
+            GameObject newPossibleTurnObject = Instantiate(boardParameters.possibleTurnPrefab, _cells[cellPosition].transform.position,quaternion.identity);
+            
+            _activePossibleTurnObjects.Add(newPossibleTurnObject);
+        }
+    }
+
+    private void DisablePossibleTurn()
+    {
+        int clearAmount = _activePossibleTurnObjects.Count;
+        if (clearAmount > 0)
+        {
+            for (int i = 0; i < clearAmount; i++)
+            {
+                _activePossibleTurnObjects[0].SetActive(false);
+                _inactivePossibleTurnObjects.Add(_activePossibleTurnObjects[0]);
+                _activePossibleTurnObjects.RemoveAt(0);
+            }
         }
         
     }
 
-    public bool CheckChessExisting(Vector3 inputPosition, ChessColour team)
+    private void OnDestroy()
     {
-        int[,] boardPosition = CalculateBoardPosition(inputPosition);
-
-        if (chess.ContainsKey(boardPosition))
-        {
-            if (chess[boardPosition].CheckTeam(team))
-            {
-                _chosenChess = chess[boardPosition];
-                return true;
-            }
-
-            return false;
-
-        }
-
-        return false;
-    }
-
-    private int[,] CalculateBoardPosition(Vector3 inputPosition)
-    {
-        int row = (int)inputPosition.x / (int)boardParameters.cellSize;
-        int column = (int)inputPosition.y / (int)boardParameters.cellSize;
-        int[,] boardPosition = new int[row,column];
-
-        return boardPosition;
+        GlobalGameEventManager.OnChesChooseEvent.RemoveListener(ChessWasChosen);
+        GlobalGameEventManager.OnCellChooseEvent.RemoveListener(CellWasChosen);
     }
 }

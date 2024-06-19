@@ -7,4 +7,6 @@ public class BoardParameters : ScriptableObject
 {
     [Min(1)] public int gridSize = 8;
     [Min(1)] public float cellSize = 2;
+    
+    [SerializeField] public GameObject possibleTurnPrefab;
 }

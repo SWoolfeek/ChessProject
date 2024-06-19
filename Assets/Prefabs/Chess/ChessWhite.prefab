@@ -153,3 +153,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
+  boardParameters: {fileID: 11400000, guid: 9ba1093cc7af1664f921fc08cefa11b8, type: 2}
