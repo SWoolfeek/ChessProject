@@ -64,7 +64,7 @@ public class GenerateBoardPrefab : MonoBehaviour
             GameObject cell = PrefabUtility.InstantiatePrefab(cellPrefabs[prefabIndex]) as GameObject;
             cell.transform.position = positionToSpawn;
             cell.transform.parent = transform;
-            cell.name = Letters[row].ToString() + (column + 1).ToString();
+            cell.name = Letters[column].ToString() + (row + 1).ToString();
         }
     }
 #endif

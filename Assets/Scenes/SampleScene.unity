@@ -3959,10 +3959,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 893e8c02ee6945040b5c36b32661f3bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whitePawn: {fileID: 3647860861297990710, guid: a72a827c5104a9f49af1c2b261fe7248,
-    type: 3}
-  blackPawn: {fileID: 8333429081981391896, guid: 01d9ceef2e0dc844cabd1ffe4e37531d,
-    type: 3}
+  whiteChess:
+  - chessType: 0
+    chessPrefab: {fileID: 3647860861297990710, guid: a72a827c5104a9f49af1c2b261fe7248,
+      type: 3}
+  - chessType: 1
+    chessPrefab: {fileID: 6934645981850521734, guid: b49effdfb37003647b007ff7c51937ee,
+      type: 3}
+  - chessType: 2
+    chessPrefab: {fileID: 3196482869850137535, guid: 1d9b406b239bb004583d48737f30d755,
+      type: 3}
+  - chessType: 3
+    chessPrefab: {fileID: 8807424493703076849, guid: 70fa61d0d320cea469166e571de96a8e,
+      type: 3}
+  - chessType: 4
+    chessPrefab: {fileID: 5370505858999681974, guid: 3120b15b7c8c8734c84410711f02e551,
+      type: 3}
+  - chessType: 5
+    chessPrefab: {fileID: 650359486000198873, guid: c87d5676cdd484041bca9735ad57f735,
+      type: 3}
+  blackChess:
+  - chessType: 0
+    chessPrefab: {fileID: 8333429081981391896, guid: 01d9ceef2e0dc844cabd1ffe4e37531d,
+      type: 3}
+  - chessType: 1
+    chessPrefab: {fileID: 8644321059065209227, guid: 6c68b240a64c1ee4c83f9f339c5ec4e5,
+      type: 3}
+  - chessType: 2
+    chessPrefab: {fileID: 8775828023608446621, guid: 1956f05bdd0d3054a8cdb2bfebc41a4b,
+      type: 3}
+  - chessType: 3
+    chessPrefab: {fileID: 829864659384208113, guid: d913b8e9ba7245b4589f51747a1ec5b0,
+      type: 3}
+  - chessType: 4
+    chessPrefab: {fileID: 2640608503168396401, guid: 57ae75aae258a4e4d9bccb1e7aa1eddb,
+      type: 3}
+  - chessType: 5
+    chessPrefab: {fileID: 5773880037821122345, guid: af218a64d23f99c4da716c17da99b209,
+      type: 3}
 --- !u!1 &1315019497
 GameObject:
   m_ObjectHideFlags: 0

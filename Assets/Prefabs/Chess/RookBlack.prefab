@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5400039641920829388}
-  - component: {fileID: 4374711219595834696}
+  - component: {fileID: -6181167296824209731}
   m_Layer: 0
   m_Name: RookBlack
   m_TagString: Untagged
@@ -34,16 +34,16 @@ Transform:
   - {fileID: 7317057784832154304}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4374711219595834696
+--- !u!114 &-6181167296824209731
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829864659384208113}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6b41d61558700a438e5245202d7cab3, type: 3}
+  m_Script: {fileID: 11500000, guid: f5c5d63d98c46a84e8cc05401831fb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   team: 1

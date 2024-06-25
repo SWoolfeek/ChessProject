@@ -60,7 +60,6 @@ public class BoardCell : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log(name);
         if (_hasChess)
         {
             PickedChess();

@@ -9,15 +9,9 @@ public class ChessPawn : ChessPiece
     private int _firstStep = 2;
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         calculateMovement = CalculateMovement;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void CalculateMovement()
@@ -42,38 +36,40 @@ public class ChessPawn : ChessPiece
 
         positionToMove = new List<string>();
         
+        int column = Letters.IndexOf(_position[0]);
+        int row = _position[1] - '0';
+        
         for (int i = 0; i < step; i++)
         {
-            int row = Letters.IndexOf(_position[0]);
             
-            if ((row + (1 + i) * teamMultiplier) < (boardParameters.gridSize) && (row + (1 + i) * teamMultiplier) > -1)
+            if ((row + (1 + i) * teamMultiplier) < (boardParameters.gridSize + 1) && (row + (1 + i) * teamMultiplier) > 0)
             {
-                string positionNext = Letters[row + (1 + i) * teamMultiplier] + _position[1].ToString();
+                string positionNext = Letters[column] + (row + (1 + i) * teamMultiplier).ToString();
                 
                 bool[] existChessResult = GameManager.CheckChess(team, positionNext);
 
                 if (row + (1 + i) * teamMultiplier == row + (1 + 0) * teamMultiplier)
                 {
                     bool[] existChessResultElimination;
-                    int columnElimination = _position[1] - '0';
                     
-                    if (columnElimination + 1 < boardParameters.gridSize + 1)
+                    if (column + 1 < boardParameters.gridSize)
                     {
-                        existChessResultElimination = GameManager.CheckChess(team, positionNext[0] + (columnElimination + 1).ToString());
+                        existChessResultElimination = GameManager.CheckChess(team, Letters[column + 1] + (row + (1 * teamMultiplier)).ToString());
+                        
 
                         if (existChessResultElimination[0] && !existChessResultElimination[1])
                         {
-                            positionToMove.Add(positionNext[0] + (columnElimination + 1).ToString());
+                            positionToMove.Add(Letters[column + 1] + (row + (1 * teamMultiplier)).ToString());
                         }
                     }
 
-                    if (columnElimination - 1 > 0)
+                    if (column - 1 > -1)
                     {
-                        existChessResultElimination = GameManager.CheckChess(team, positionNext[0] + (columnElimination - 1).ToString());
+                        existChessResultElimination = GameManager.CheckChess(team, Letters[column - 1] + (row + (1 * teamMultiplier)).ToString());
 
                         if (existChessResultElimination[0] && !existChessResultElimination[1])
                         {
-                            positionToMove.Add(positionNext[0] + (columnElimination - 1).ToString());
+                            positionToMove.Add(Letters[column - 1] + (row + (1 * teamMultiplier)).ToString());
                         }
                     }
                 }

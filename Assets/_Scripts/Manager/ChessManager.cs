@@ -56,6 +56,8 @@ public class ChessManager : MonoBehaviour
 
     private void ChessWasChosen(string cell, List<string> path)
     {
+        DisableAllPossibleTurns();
+        
         Debug.Log("With chess = true");
         _pickedChess = true;
         _pickedChessName = cell;
@@ -91,8 +93,7 @@ public class ChessManager : MonoBehaviour
             _pickedChessName = cell;
         }
 
-        DisablePossibleTurn();
-
+        DisableAllPossibleTurns();
     }
 
     private void PossibleTurnColor(string position, GameObject possiblePositionObject)
@@ -135,7 +136,7 @@ public class ChessManager : MonoBehaviour
         }
     }
 
-    private void DisablePossibleTurn()
+    private void DisableAllPossibleTurns()
     {
         int clearAmount = _activePossibleTurnObjects.Count;
         if (clearAmount > 0)

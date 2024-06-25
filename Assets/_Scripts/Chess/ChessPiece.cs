@@ -52,7 +52,7 @@ public class ChessPiece : MonoBehaviour
     public List<string> CalculateMovement()
     {
         calculateMovement.Invoke();
-        
+        print(positionToMove.Count);
         return positionToMove;
     }
 
