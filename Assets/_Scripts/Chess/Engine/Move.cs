@@ -8,6 +8,11 @@ namespace Chess
     {
         public readonly int StartPosition;
         public readonly int TargetPosition;
+        
+        public Move (int startPosition, int targetPosition) {
+            StartPosition = startPosition;
+            TargetPosition = targetPosition;
+        }
     }
 }
 
