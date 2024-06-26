@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ChessGenerationManager : MonoBehaviour
@@ -16,6 +17,8 @@ public class ChessGenerationManager : MonoBehaviour
     private Dictionary<ChessType, GameObject> _blackChess = new Dictionary<ChessType, GameObject>();
     
     public static ChessGenerationManager Instance { get; private set; }
+    
+    private const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     private void Awake()
     {
@@ -37,8 +40,10 @@ public class ChessGenerationManager : MonoBehaviour
             _whiteChess[whiteChess[i].chessType] = whiteChess[i].chessPrefab;
             _blackChess[blackChess[i].chessType] = blackChess[i].chessPrefab;
         }
-        
-        BaseChessPosition();
+
+        StartingFEN(StartFen);
+        //GenerateChessFromChessEngine();
+       // BaseChessPosition();
     }
     
     public void SetBoard(Dictionary<string, GameObject> input)
@@ -83,6 +88,66 @@ public class ChessGenerationManager : MonoBehaviour
         }
 
     }
+
+    private void GenerateChessFromChessEngine()
+    {
+        for (int i = 0; i < Chess.Board.board.Length; i++)
+        {
+            SpawnDecrypt(i, Chess.Board.board[i]);
+        }
+    }
+
+    private void SpawnDecrypt(int position, int piece)
+    {
+        if (piece != 0)
+        {
+            SpawnChess(Chess.Decoders.DecodePositionFromInt(position), Chess.Decoders.DecodeBinaryChessType(piece), Chess.Decoders.DecodeBinaryChessColour(piece));
+        }
+    }
+
+    
+    private void StartingFEN(string fen)
+    {
+        string[] spawnPositions = fen.Split(' ')[0].Split('/');
+
+        int rowCount = 0;
+
+        foreach (string row in spawnPositions.Reverse())
+        {
+            int column = 0;
+            foreach (char symbol in row)
+            {
+                
+                if (char.IsNumber(symbol))
+                {
+                    column += (symbol - '0');
+                    if (column > 7)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if (char.IsUpper(symbol))
+                    {
+                        SpawnChess(Chess.Decoders.DecodePositionFromInt(rowCount * 8 + column),
+                            Chess.Decoders.DecodeFENChessType(symbol), ChessColour.White);
+                    }
+                    else
+                    {
+                        SpawnChess(Chess.Decoders.DecodePositionFromInt(rowCount * 8 + column),
+                            Chess.Decoders.DecodeFENChessType(symbol), ChessColour.Black);
+                    }
+
+                    column++;
+                }
+            }
+
+            rowCount++;
+
+        }
+    }
+    
 }
 
 [Serializable]
