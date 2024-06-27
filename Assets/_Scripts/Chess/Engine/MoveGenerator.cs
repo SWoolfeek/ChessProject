@@ -6,43 +6,57 @@ namespace Chess
 {
     public class MoveGenerator
     {
-        private List<Move> _moves;
+        private Dictionary<int, Move[]> _moves;
 
-        public List<Move> GenerateMoves()
+        public Dictionary<int, Move[]> GenerateMoves()
         {
+            _moves = new Dictionary<int, Move[]>();
+            
             for (int startPosition = 0; startPosition < 64; startPosition++)
             {
                 int piece= Board.board[startPosition];
                 if (Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn)
                 {
-                    GenerateSlidingMoves(startPosition, piece);
+                    GenerateSlidingMoves(startPosition);
                 }
             }
 
             return _moves;
         }
 
-        private void GenerateSlidingMoves(int startingPosition, int piece)
+        private void GenerateSlidingMoves(int startingPosition)
         {
+            List<Move> targetPositions = new List<Move>();
             for (int directionIndex = 0; directionIndex < 8; directionIndex++)
             {
                 for (int n = 0; n < PrecomputedMoveData.NumCellsToEdge[startingPosition][directionIndex]; n++)
                 {
                     int targetCell = startingPosition + PrecomputedMoveData.DirectionOffsets[directionIndex] * (n + 1);
                     int pieceOnTargetCell = Board.board[targetCell];
-
-                    if (Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn)
+                    if (pieceOnTargetCell > 0)
                     {
-                        break;
+                        if (Decoders.DecodeBinaryChessColour(pieceOnTargetCell) == GlobalGameVariables.ChessTurn)
+                        {
+                            break;
+                        }
+                    
+                        targetPositions.Add( (new Move(startingPosition, targetCell)));
+                    
+                        if (Decoders.DecodeBinaryChessColour(targetCell) != GlobalGameVariables.ChessTurn)
+                        {
+                            break;
+                        }
                     }
-                    
-                    _moves.Add( (new Move(startingPosition, targetCell)));
-                    
-                    if (Decoders.DecodeBinaryChessColour(piece) != GlobalGameVariables.ChessTurn)
+                    else
                     {
-                        break;
+                        targetPositions.Add( (new Move(startingPosition, targetCell)));
                     }
                 }
+            }
+
+            if (targetPositions.Count > 0)
+            {
+                _moves[startingPosition] = targetPositions.ToArray();
             }
         }
     }

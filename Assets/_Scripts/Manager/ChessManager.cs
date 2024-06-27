@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Chess;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -21,12 +22,18 @@ public class ChessManager : MonoBehaviour
 
     private Dictionary<string, GameObject> _cells;
     
-    private bool _pickedChess;
+    
     private string _pickedChessName;
     private List<string> _calculatedPath;
 
     private List<GameObject> _activePossibleTurnObjects = new List<GameObject>();
     private List<GameObject> _inactivePossibleTurnObjects = new List<GameObject>();
+
+    private bool _pickedChess;
+    private int _pickedChessPosition;
+    
+    private Chess.MoveGenerator _moveGenerator;
+    private Dictionary<int, Chess.Move[]> _moves;
 
     private void Awake()
     {
@@ -40,18 +47,20 @@ public class ChessManager : MonoBehaviour
         Instance = this;
         
         GlobalGameEventManager.OnChesChooseEvent.AddListener(ChessWasChosen);
-        GlobalGameEventManager.OnCellChooseEvent.AddListener(CellWasChosen);
+        GlobalGameEventManager.OnCellChooseEvent.AddListener(CellPicked);
     }
 
     // Start is called before the first frame update
     public void StartChessManager()
     {
-        
+        _moveGenerator = new MoveGenerator();
+        _moves = _moveGenerator.GenerateMoves();
     }
 
     public void SetBoard(Dictionary<string, GameObject> input)
     {
         _cells = input;
+        
     }
 
     private void ChessWasChosen(string cell, List<string> path)
@@ -66,6 +75,46 @@ public class ChessManager : MonoBehaviour
         foreach (string position in path)
         {
             ShowPossibleTurn(position);
+        }
+    }
+
+    private void CellPicked(string cell)
+    {
+        int cellPosition = Decoders.DecodePositionToInt(cell);
+        int piece = Board.board[cellPosition];
+        
+        if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
+        {
+            // Test.
+            if (Decoders.DecodeBinaryChessType(piece) == ChessType.Queen )
+            {
+                _pickedChessPosition = cellPosition;
+                _pickedChess = true;
+                foreach (Move move in _moves[cellPosition])
+                {
+                    ShowPossibleTurn(Decoders.DecodePositionFromInt(move.TargetPosition));
+                }
+                
+            }
+        }
+        else if (_pickedChess)
+        {
+            bool possibleToMove = false;
+            foreach (Move move in _moves[_pickedChessPosition])
+            {
+                if (move.TargetPosition == cellPosition)
+                {
+                    possibleToMove = true;
+                }
+            }
+
+            if (possibleToMove)
+            {
+                _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(cellPosition)]);
+            }
+            
+            DisableAllPossibleTurns();
+            _pickedChess = false;
         }
     }
 

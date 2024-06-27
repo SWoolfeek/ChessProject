@@ -34,28 +34,35 @@ namespace Chess
 
         public static ChessType DecodeBinaryChessType(int input)
         {
+            int colour = Piece.White;;
+
+            if (input > Piece.Black)
+            {
+                colour = Piece.Black;
+            }
+            
             ChessType type = ChessType.Pawn;
-            if ((input & Piece.King) == Piece.King)
+            if ((input - colour) == Piece.King)
             {
                 type = ChessType.King;
             }
-            else if ((input & Piece.Pawn) == Piece.Pawn)
+            else if ((input - colour) == Piece.Pawn)
             {
                 type = ChessType.Pawn;
             }
-            else if ((input & Piece.Knight) == Piece.Knight)
+            else if ((input - colour) == Piece.Knight)
             {
                 type = ChessType.Knight;
             }
-            else if ((input & Piece.Bishop) == Piece.Bishop)
+            else if ((input - colour) == Piece.Bishop)
             {
                 type = ChessType.Bishop;
             }
-            else if ((input & Piece.Rook) == Piece.Rook)
+            else if ((input - colour) == Piece.Rook)
             {
                 type = ChessType.Rook;
             }
-            else if ((input & Piece.Queen) == Piece.Queen)
+            else if ((input - colour) == Piece.Queen)
             {
                 type = ChessType.Queen;
             }
@@ -65,12 +72,12 @@ namespace Chess
 
         public static ChessColour DecodeBinaryChessColour(int input)
         {
-            if ((input & Piece.White) == Piece.White)
+            if (input > Piece.Black)
             {
-                return ChessColour.White;
+                return ChessColour.Black;
             }
 
-            return ChessColour.Black;
+            return ChessColour.White;
             ;
         }
 
@@ -89,5 +96,47 @@ namespace Chess
 
             return row * 8 + column;
         }
+        
+        public static int DecodeChessToInt(ChessColour team, ChessType type)
+        {
+            int chessTeam = 0;
+            int chessType = 0;
+
+            switch (type)
+            {
+                case ChessType.Pawn:
+                    chessType = Piece.Pawn;
+                    break;
+                case ChessType.King:
+                    chessType = Piece.King;
+                    break;
+                case ChessType.Queen:
+                    chessType = Piece.Queen;
+                    break;
+                case ChessType.Rook:
+                    chessType = Piece.Rook;
+                    break;
+                case ChessType.Bishop:
+                    chessType = Piece.Bishop;
+                    break;
+                case ChessType.Knight:
+                    chessType = Piece.Knight;
+                    break;
+            }
+
+            switch (team)
+            {
+                case ChessColour.White:
+                    chessTeam = Piece.White;
+                    break;
+                case ChessColour.Black:
+                    chessTeam = Piece.Black;
+                    break;
+            }
+
+            return chessTeam | chessType;
+        }
+        
+        
     }
 }

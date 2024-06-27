@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Chess;
 using UnityEngine;
 
 public class ChessGenerationManager : MonoBehaviour
@@ -18,7 +19,7 @@ public class ChessGenerationManager : MonoBehaviour
     
     public static ChessGenerationManager Instance { get; private set; }
     
-    private const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private const string StartFen = "rnbqkbnr/pppppppp/8/4Q3/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     private void Awake()
     {
@@ -120,6 +121,11 @@ public class ChessGenerationManager : MonoBehaviour
                 
                 if (char.IsNumber(symbol))
                 {
+                    for (int i = 0; i < (symbol - '0'); i++)
+                    {
+                        Board.board[rowCount * 8 + column + i] = Piece.None;
+                    }
+                    
                     column += (symbol - '0');
                     if (column > 7)
                     {
@@ -128,15 +134,18 @@ public class ChessGenerationManager : MonoBehaviour
                 }
                 else
                 {
+                    ChessType chessType = Chess.Decoders.DecodeFENChessType(symbol);
                     if (char.IsUpper(symbol))
                     {
                         SpawnChess(Chess.Decoders.DecodePositionFromInt(rowCount * 8 + column),
-                            Chess.Decoders.DecodeFENChessType(symbol), ChessColour.White);
+                            chessType, ChessColour.White);
+                        Board.board[rowCount * 8 + column] = Decoders.DecodeChessToInt(ChessColour.White, chessType);
                     }
                     else
                     {
                         SpawnChess(Chess.Decoders.DecodePositionFromInt(rowCount * 8 + column),
-                            Chess.Decoders.DecodeFENChessType(symbol), ChessColour.Black);
+                            chessType, ChessColour.Black);
+                        Board.board[rowCount * 8 + column] = Decoders.DecodeChessToInt(ChessColour.Black, chessType);
                     }
 
                     column++;

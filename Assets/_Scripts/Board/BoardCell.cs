@@ -16,6 +16,7 @@ public class BoardCell : MonoBehaviour
 
     public void MoveTo(GameObject target)
     {
+        print(target.name);
         _chess.transform.position = target.transform.position;
         _chess.transform.parent = target.transform;
 
@@ -60,13 +61,15 @@ public class BoardCell : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (_hasChess)
+        /*if (_hasChess)
         {
             PickedChess();
         }
         else
         {
             GlobalGameEventManager.ChooseCell(name);
-        }
+        }*/
+        
+        GlobalGameEventManager.ChooseCell(name);
     }
 }
