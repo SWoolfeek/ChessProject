@@ -17,17 +17,20 @@ namespace Chess
                 int piece= Board.board[startPosition];
                 if (Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn)
                 {
-                    GenerateSlidingMoves(startPosition);
+                    GenerateSlidingMoves(startPosition, piece);
                 }
             }
 
             return _moves;
         }
 
-        private void GenerateSlidingMoves(int startingPosition)
+        private void GenerateSlidingMoves(int startingPosition, int piece)
         {
+            int startDirIndex = (Decoders.DecodeBinaryChessType(piece) == ChessType.Bishop) ? 4 : 0;
+            int endDirIndex = (Decoders.DecodeBinaryChessType(piece) == ChessType.Rook) ? 4 : 8;
+            
             List<Move> targetPositions = new List<Move>();
-            for (int directionIndex = 0; directionIndex < 8; directionIndex++)
+            for (int directionIndex = startDirIndex; directionIndex < endDirIndex; directionIndex++)
             {
                 for (int n = 0; n < PrecomputedMoveData.NumCellsToEdge[startingPosition][directionIndex]; n++)
                 {
