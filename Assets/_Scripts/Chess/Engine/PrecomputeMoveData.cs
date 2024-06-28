@@ -6,8 +6,16 @@ namespace Chess
 {
     public static class PrecomputedMoveData
     {
+        public static readonly Board BoardRepresentation = new Board();
+        
         public static readonly int[] DirectionOffsets = { 8, -8, -1, 1, 7, -7, 9, -9 };
         public static readonly int[][] NumCellsToEdge;
+        
+        // White = 0 and Black = 1.
+        public static readonly int[][] pawnAttackDirections = {
+            new int[] { 4, 6 },
+            new int[] { 7, 5 }
+        };
 
         static PrecomputedMoveData()
         {

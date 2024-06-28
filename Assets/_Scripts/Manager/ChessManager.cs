@@ -81,12 +81,12 @@ public class ChessManager : MonoBehaviour
     private void CellPicked(string cell)
     {
         int cellPosition = Decoders.DecodePositionToInt(cell);
-        int piece = Board.board[cellPosition];
+        int piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
         
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {
             // Test.
-            if (Decoders.DecodeBinaryChessType(piece) == ChessType.Queen )
+            if (Decoders.DecodeBinaryChessType(piece) == ChessType.Queen || Decoders.DecodeBinaryChessType(piece) == ChessType.Pawn || Decoders.DecodeBinaryChessType(piece) == ChessType.Rook || Decoders.DecodeBinaryChessType(piece) == ChessType.Bishop )
             {
                 _pickedChessPosition = cellPosition;
                 _pickedChess = true;
@@ -110,7 +110,9 @@ public class ChessManager : MonoBehaviour
 
             if (possibleToMove)
             {
-                _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(cellPosition)]);
+                _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>().MoveTo(_cells[cell]);
+                PrecomputedMoveData.BoardRepresentation.MovePiece(_pickedChessPosition,cellPosition);
+                _moves = _moveGenerator.GenerateMoves();
             }
             
             DisableAllPossibleTurns();

@@ -92,9 +92,9 @@ public class ChessGenerationManager : MonoBehaviour
 
     private void GenerateChessFromChessEngine()
     {
-        for (int i = 0; i < Chess.Board.board.Length; i++)
+        for (int i = 0; i < Chess.PrecomputedMoveData.BoardRepresentation.board.Length; i++)
         {
-            SpawnDecrypt(i, Chess.Board.board[i]);
+            SpawnDecrypt(i, Chess.PrecomputedMoveData.BoardRepresentation.board[i]);
         }
     }
 
@@ -123,7 +123,7 @@ public class ChessGenerationManager : MonoBehaviour
                 {
                     for (int i = 0; i < (symbol - '0'); i++)
                     {
-                        Board.board[rowCount * 8 + column + i] = Piece.None;
+                        PrecomputedMoveData.BoardRepresentation.board[rowCount * 8 + column + i] = Piece.None;
                     }
                     
                     column += (symbol - '0');
@@ -139,13 +139,13 @@ public class ChessGenerationManager : MonoBehaviour
                     {
                         SpawnChess(Chess.Decoders.DecodePositionFromInt(rowCount * 8 + column),
                             chessType, ChessColour.White);
-                        Board.board[rowCount * 8 + column] = Decoders.DecodeChessToInt(ChessColour.White, chessType);
+                        PrecomputedMoveData.BoardRepresentation.AddPiece(rowCount * 8 + column ,chessType, ChessColour.White);
                     }
                     else
                     {
                         SpawnChess(Chess.Decoders.DecodePositionFromInt(rowCount * 8 + column),
                             chessType, ChessColour.Black);
-                        Board.board[rowCount * 8 + column] = Decoders.DecodeChessToInt(ChessColour.Black, chessType);
+                        PrecomputedMoveData.BoardRepresentation.AddPiece(rowCount * 8 + column ,chessType, ChessColour.Black);
                     }
 
                     column++;
