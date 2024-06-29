@@ -86,7 +86,7 @@ public class ChessManager : MonoBehaviour
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {
             // Test.
-            if (Decoders.DecodeBinaryChessType(piece) == ChessType.Queen || Decoders.DecodeBinaryChessType(piece) == ChessType.Pawn || Decoders.DecodeBinaryChessType(piece) == ChessType.Rook || Decoders.DecodeBinaryChessType(piece) == ChessType.Bishop )
+            if (Decoders.DecodeBinaryChessType(piece) != ChessType.King )
             {
                 _pickedChessPosition = cellPosition;
                 _pickedChess = true;

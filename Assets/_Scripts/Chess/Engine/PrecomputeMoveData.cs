@@ -17,6 +17,14 @@ namespace Chess
             new int[] { 7, 5 }
         };
 
+        public static readonly int[] knightMoves = new int[] { 15, 17, -17, -15, 6, -10, 10, -6 };
+        public static readonly int[][] knightDirections = new int[][] {
+            new int[] { 4, 6 }, // north west, north east.
+            new int[] { 7, 5 }, // south west, south east.
+            new int[] { 4, 7 }, // north west, south west.
+            new int[] { 6, 5 } // north east, south east.
+        };
+
         static PrecomputedMoveData()
         {
             NumCellsToEdge = new int[64][];

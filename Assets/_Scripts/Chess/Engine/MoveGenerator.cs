@@ -22,6 +22,7 @@ namespace Chess
                 {
                     GenerateSlidingMoves();
                     GeneratePawnMoves();
+                    GenerateKnightMoves();
                 }
             }
 
@@ -87,8 +88,6 @@ namespace Chess
 
         private void GeneratePawnMoves()
         {
-            
-            
             int directionIndex = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             int startingRow = GlobalGameVariables.ChessTurn == ChessColour.White ? 1 : 6;
 
@@ -144,6 +143,50 @@ namespace Chess
             
                 
             }
+        }
+
+        private void GenerateKnightMoves()
+        {
+            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+
+            for (int i = 0; i < BoardRepresentation.knights[chessTeam].Count; i++)
+            {
+                List<Move> targetPositions = new List<Move>();
+                int startingPosition = BoardRepresentation.knights[chessTeam][i];
+
+                for (int j = 0; j < 4; j++)
+                {
+                    if (NumCellsToEdge[startingPosition][j] > 1)
+                    {
+                        targetPositions.AddRange(CalculateKnightMove(startingPosition, j));
+                    }
+                }
+                
+                if (targetPositions.Count > 0)
+                {
+                    _moves[startingPosition] = targetPositions.ToArray();
+                }
+            }
+        }
+
+        private List<Move> CalculateKnightMove(int startingPosition, int direction)
+        {
+            List<Move> result = new List<Move>();
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (NumCellsToEdge[startingPosition][knightDirections[direction][i]] > 0)
+                {
+                    int targetPosition = startingPosition + knightMoves[direction * 2 + i];
+                    
+                    if (BoardRepresentation.board[targetPosition] == 0 || Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetPosition]) != GlobalGameVariables.ChessTurn)
+                    {
+                        result.Add(new Move(startingPosition, targetPosition));
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

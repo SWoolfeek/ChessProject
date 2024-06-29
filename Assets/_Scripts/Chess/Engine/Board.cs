@@ -7,6 +7,8 @@ namespace Chess
     public class Board
     {
         public int[] board;
+
+        public int[] kingsPosition;
         
         public PieceList[] pawns;
         public PieceList[] bishops;
