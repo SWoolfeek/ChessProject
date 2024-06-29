@@ -19,7 +19,7 @@ public class ChessGenerationManager : MonoBehaviour
     
     public static ChessGenerationManager Instance { get; private set; }
     
-    private const string StartFen = "rnbqkbnr/pppppppp/8/4Q3/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     private void Awake()
     {

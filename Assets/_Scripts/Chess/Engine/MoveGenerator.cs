@@ -20,6 +20,7 @@ namespace Chess
                 int piece= BoardRepresentation.board[startPosition];
                 if (Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn)
                 {
+                    GenerateKingMoves ();
                     GenerateSlidingMoves();
                     GeneratePawnMoves();
                     GenerateKnightMoves();
@@ -27,6 +28,32 @@ namespace Chess
             }
 
             return _moves;
+        }
+
+        private void GenerateKingMoves()
+        {
+            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+            int startingPosition = BoardRepresentation.kingsPosition[chessTeam];
+            
+            List<Move> targetPositions = new List<Move>();
+            
+            for (int direction = 0; direction < 8; direction++)
+            {
+                if (NumCellsToEdge[startingPosition][direction] > 0)
+                {
+                    int targetPosition = startingPosition + DirectionOffsets[direction];
+                    
+                    if (BoardRepresentation.board[targetPosition] == 0 || Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetPosition]) != GlobalGameVariables.ChessTurn)
+                    {
+                        targetPositions.Add(new Move(startingPosition, targetPosition));
+                    }
+                }
+            }
+            
+            if (targetPositions.Count > 0)
+            {
+                _moves[startingPosition] = targetPositions.ToArray();
+            }
         }
 
         private void GenerateSlidingMoves()
@@ -128,7 +155,7 @@ namespace Chess
                             targetCell = startingPosition +
                                          DirectionOffsets[
                                              pawnAttackDirections[directionIndex][j]];
-                            if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != GlobalGameVariables.ChessTurn)
+                            if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != GlobalGameVariables.ChessTurn && BoardRepresentation.board[targetCell] != 0)
                             {
                                 targetPositions.Add( (new Move(startingPosition, targetCell)));
                             }

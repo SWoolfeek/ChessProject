@@ -24,6 +24,8 @@ namespace Chess
         public void ReInitialize()
         {
             board = new int[64];
+
+            kingsPosition = new int[2];
             
             knights = new PieceList[] { new PieceList (10), new PieceList (10) };
             pawns = new PieceList[] { new PieceList (8), new PieceList (8) };
@@ -54,7 +56,7 @@ namespace Chess
                     queens[chessTeam].AddPiece(position);;
                     break;
                 case ChessType.King:
-                    // King Logic.
+                    kingsPosition[chessTeam] = position;
                     break;
             }
 
@@ -124,7 +126,7 @@ namespace Chess
                     queens[chessTeam].MovePiece(startingPosition,targetPosition);
                     break;
                 case ChessType.King:
-                    // King Logic.
+                    kingsPosition[chessTeam] = targetPosition;
                     break;
             }
         }

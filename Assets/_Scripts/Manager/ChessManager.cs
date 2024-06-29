@@ -85,16 +85,11 @@ public class ChessManager : MonoBehaviour
         
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {
-            // Test.
-            if (Decoders.DecodeBinaryChessType(piece) != ChessType.King )
+            _pickedChessPosition = cellPosition;
+            _pickedChess = true;
+            foreach (Move move in _moves[cellPosition])
             {
-                _pickedChessPosition = cellPosition;
-                _pickedChess = true;
-                foreach (Move move in _moves[cellPosition])
-                {
-                    ShowPossibleTurn(Decoders.DecodePositionFromInt(move.TargetPosition));
-                }
-                
+                ShowPossibleTurn(Decoders.DecodePositionFromInt(move.TargetPosition));
             }
         }
         else if (_pickedChess)
@@ -112,6 +107,9 @@ public class ChessManager : MonoBehaviour
             {
                 _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>().MoveTo(_cells[cell]);
                 PrecomputedMoveData.BoardRepresentation.MovePiece(_pickedChessPosition,cellPosition);
+                GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
+                    ? ChessColour.Black
+                    : ChessColour.White;
                 _moves = _moveGenerator.GenerateMoves();
             }
             

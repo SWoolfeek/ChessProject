@@ -78,7 +78,6 @@ namespace Chess
             }
 
             return ChessColour.White;
-            ;
         }
 
         public static string DecodePositionFromInt(int position)
