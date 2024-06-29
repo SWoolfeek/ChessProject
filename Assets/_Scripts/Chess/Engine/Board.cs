@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ namespace Chess
         public PieceList[] rooks;
         public PieceList[] knights;
         public PieceList[] queens;
+        
+        
 
         public Board()
         {

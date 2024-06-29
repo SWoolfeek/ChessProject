@@ -10,29 +10,53 @@ namespace Chess
     public class MoveGenerator
     {
         private Dictionary<int, Move[]> _moves;
+
+        /*public Dictionary<int, Move[]> GenerateLegalMoves()
+        {
+            Dictionary<int, Move[]> pseudoLegalMoves = GenerateMoves();
+            Dictionary<int, Move[]> legalMoves = new Dictionary<int, Move[]>();
+
+            foreach (int key in pseudoLegalMoves.Keys)
+            {
+                foreach (Move verificationMove in pseudoLegalMoves[key])
+                {
+                    
+                }
+            }
+        }*/
         
         public Dictionary<int, Move[]> GenerateMoves()
         {
             _moves = new Dictionary<int, Move[]>();
+            float time = Time.time;
+            Debug.Log("Starting calculation");
+            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             
             for (int startPosition = 0; startPosition < 64; startPosition++)
             {
                 int piece= BoardRepresentation.board[startPosition];
                 if (Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn)
                 {
-                    GenerateKingMoves ();
-                    GenerateSlidingMoves();
-                    GeneratePawnMoves();
-                    GenerateKnightMoves();
+                    GenerateMoveForPieces(chessTeam);
                 }
             }
+
+            time -= Time.time;
+            Debug.Log("Calculation ends - " + time + " s.");
 
             return _moves;
         }
 
-        private void GenerateKingMoves()
+        private void GenerateMoveForPieces(int chessTeam)
         {
-            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+            GenerateKingMoves(chessTeam);
+            GenerateSlidingMoves(chessTeam);
+            GeneratePawnMoves(chessTeam);
+            GenerateKnightMoves(chessTeam);
+        }
+
+        private void GenerateKingMoves(int chessTeam)
+        {
             int startingPosition = BoardRepresentation.kingsPosition[chessTeam];
             
             List<Move> targetPositions = new List<Move>();
@@ -56,9 +80,8 @@ namespace Chess
             }
         }
 
-        private void GenerateSlidingMoves()
+        private void GenerateSlidingMoves(int chessTeam)
         {
-            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             
             for (int i = 0; i < BoardRepresentation.rooks[chessTeam].Count; i++)
             {
@@ -113,32 +136,31 @@ namespace Chess
             }
         }
 
-        private void GeneratePawnMoves()
+        private void GeneratePawnMoves(int chessTeam)
         {
-            int directionIndex = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             int startingRow = GlobalGameVariables.ChessTurn == ChessColour.White ? 1 : 6;
 
-            for (int i = 0; i < BoardRepresentation.pawns[directionIndex].Count; i++)
+            for (int i = 0; i < BoardRepresentation.pawns[chessTeam].Count; i++)
             {
                 List<Move> targetPositions = new List<Move>();
                 
-                int startingPosition = BoardRepresentation.pawns[directionIndex][i];
+                int startingPosition = BoardRepresentation.pawns[chessTeam][i];
                 int row = startingPosition / 8;
-                int targetCell = startingPosition + DirectionOffsets[directionIndex];
+                int targetCell = startingPosition + DirectionOffsets[chessTeam];
 
                 // Generating moves.
-                if (NumCellsToEdge[startingPosition][directionIndex] > 0)
+                if (NumCellsToEdge[startingPosition][chessTeam] > 0)
                 {
                     if (BoardRepresentation.board[targetCell] == 0)
                     {
                         targetPositions.Add( (new Move(startingPosition, targetCell)));
                     }
 
-                    if (NumCellsToEdge[targetCell][directionIndex] > 0)
+                    if (NumCellsToEdge[targetCell][chessTeam] > 0)
                     {
                         if (startingRow == row)
                         {
-                            targetCell += DirectionOffsets[directionIndex];
+                            targetCell += DirectionOffsets[chessTeam];
                 
                             if (BoardRepresentation.board[targetCell] == 0)
                             {
@@ -150,11 +172,11 @@ namespace Chess
                     // Generating capture.
                     for (int j = 0; j < 2; j++)
                     {
-                        if (NumCellsToEdge[startingPosition][pawnAttackDirections[directionIndex][j]] > 0)
+                        if (NumCellsToEdge[startingPosition][pawnAttackDirections[chessTeam][j]] > 0)
                         {
                             targetCell = startingPosition +
                                          DirectionOffsets[
-                                             pawnAttackDirections[directionIndex][j]];
+                                             pawnAttackDirections[chessTeam][j]];
                             if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != GlobalGameVariables.ChessTurn && BoardRepresentation.board[targetCell] != 0)
                             {
                                 targetPositions.Add( (new Move(startingPosition, targetCell)));
@@ -172,9 +194,8 @@ namespace Chess
             }
         }
 
-        private void GenerateKnightMoves()
+        private void GenerateKnightMoves(int chessTeam)
         {
-            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
 
             for (int i = 0; i < BoardRepresentation.knights[chessTeam].Count; i++)
             {
@@ -185,7 +206,7 @@ namespace Chess
                 {
                     if (NumCellsToEdge[startingPosition][j] > 1)
                     {
-                        targetPositions.AddRange(CalculateKnightMove(startingPosition, j));
+                        targetPositions.AddRange(CalculateKnightMove(startingPosition, j, chessTeam));
                     }
                 }
                 
@@ -196,7 +217,7 @@ namespace Chess
             }
         }
 
-        private List<Move> CalculateKnightMove(int startingPosition, int direction)
+        private List<Move> CalculateKnightMove(int startingPosition, int direction, int chessTeam)
         {
             List<Move> result = new List<Move>();
 
@@ -206,7 +227,7 @@ namespace Chess
                 {
                     int targetPosition = startingPosition + knightMoves[direction * 2 + i];
                     
-                    if (BoardRepresentation.board[targetPosition] == 0 || Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetPosition]) != GlobalGameVariables.ChessTurn)
+                    if (BoardRepresentation.board[targetPosition] == 0 || Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetPosition]) != (ChessColour)chessTeam)
                     {
                         result.Add(new Move(startingPosition, targetPosition));
                     }
