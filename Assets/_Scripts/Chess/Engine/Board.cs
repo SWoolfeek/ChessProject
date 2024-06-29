@@ -16,9 +16,10 @@ namespace Chess
         public PieceList[] rooks;
         public PieceList[] knights;
         public PieceList[] queens;
-        
-        
 
+        private ChessType _previouslyCaptured;
+        private bool _previousTurnWasCaptured;
+        
         public Board()
         {
             ReInitialize();
@@ -78,18 +79,23 @@ namespace Chess
                 {
                     case ChessType.Pawn:
                         pawns[1 - chessTeam].RemovePiece(targetPosition);
+                        _previouslyCaptured = ChessType.Pawn;
                         break;
                     case ChessType.Knight:
-                        knights[1 - chessTeam].RemovePiece(targetPosition);;
+                        knights[1 - chessTeam].RemovePiece(targetPosition);
+                        _previouslyCaptured = ChessType.Knight;
                         break;
                     case ChessType.Bishop:
-                        bishops[1 - chessTeam].RemovePiece(targetPosition);;
+                        bishops[1 - chessTeam].RemovePiece(targetPosition);
+                        _previouslyCaptured = ChessType.Bishop;
                         break;
                     case ChessType.Rook:
-                        rooks[1 - chessTeam].RemovePiece(targetPosition);;
+                        rooks[1 - chessTeam].RemovePiece(targetPosition);
+                        _previouslyCaptured = ChessType.Rook;
                         break;
                     case ChessType.Queen:
-                        queens[1 - chessTeam].RemovePiece(targetPosition);;
+                        queens[1 - chessTeam].RemovePiece(targetPosition);
+                        _previouslyCaptured = ChessType.Queen;
                         break;
                     case ChessType.King:
                         // King Logic.
@@ -97,11 +103,13 @@ namespace Chess
                 }
                 
                 BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
-                
+                _previousTurnWasCaptured = true;
+
             }
             else
             {
                 BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
+                _previousTurnWasCaptured = false;
             }
             
         }
@@ -131,6 +139,17 @@ namespace Chess
                 case ChessType.King:
                     kingsPosition[chessTeam] = targetPosition;
                     break;
+            }
+        }
+
+        private void UndoPreviousMovement(int startingPosition, int targetPosition,  ChessType pieceMoving, ChessColour chessTeam)
+        {
+            int team = chessTeam == ChessColour.White ? 0 : 1;
+            BasicMoving(targetPosition, startingPosition, team, pieceMoving);
+            if (_previousTurnWasCaptured)
+            {
+                ChessColour enemyTeam = chessTeam == ChessColour.White ? ChessColour.Black : ChessColour.White;
+                AddPiece(targetPosition, _previouslyCaptured,enemyTeam);
             }
         }
     }
