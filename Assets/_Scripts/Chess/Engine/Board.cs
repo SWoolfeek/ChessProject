@@ -142,10 +142,10 @@ namespace Chess
             }
         }
 
-        private void UndoPreviousMovement(int startingPosition, int targetPosition,  ChessType pieceMoving, ChessColour chessTeam)
+        public void UndoPreviousMovement(int startingPosition, int targetPosition, ChessColour chessTeam)
         {
             int team = chessTeam == ChessColour.White ? 0 : 1;
-            BasicMoving(targetPosition, startingPosition, team, pieceMoving);
+            BasicMoving(targetPosition, startingPosition, team, Decoders.DecodeBinaryChessType(board[targetPosition]));
             if (_previousTurnWasCaptured)
             {
                 ChessColour enemyTeam = chessTeam == ChessColour.White ? ChessColour.Black : ChessColour.White;

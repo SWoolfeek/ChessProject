@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -9,28 +10,86 @@ namespace Chess
     
     public class MoveGenerator
     {
+        
         private Dictionary<int, Move[]> _moves;
 
-        /*public Dictionary<int, Move[]> GenerateLegalMoves()
+        public Dictionary<int, Move[]> GenerateLegalMoves()
         {
-            Dictionary<int, Move[]> pseudoLegalMoves = GenerateMoves();
+            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+            Dictionary<int, Move[]> pseudoLegalMoves = GenerateMoves(chessTeam);
             Dictionary<int, Move[]> legalMoves = new Dictionary<int, Move[]>();
 
+            Debug.Log("Starting calculation");
+            float time = Time.time;
+            
+            Debug.Log(BoardRepresentation.kingsPosition[chessTeam]);
+            
             foreach (int key in pseudoLegalMoves.Keys)
             {
+                List<Move> possibleTargets = new List<Move>();
+                
                 foreach (Move verificationMove in pseudoLegalMoves[key])
                 {
                     
+                    BoardRepresentation.MovePiece(verificationMove.StartPosition,verificationMove.TargetPosition);
+                    Dictionary<int, Move[]> opponentResponses = GenerateMoves(1 - chessTeam);
+
+                    foreach (int  opponentKey in opponentResponses.Keys)
+                    {
+                        int check = 0;
+
+                        foreach (Move moving in opponentResponses[opponentKey])
+                        {
+
+                            if (moving.StartPosition == 25)
+                            {
+                                Debug.Log(moving.TargetPosition);
+                            }
+                            
+                            if (moving.TargetPosition == BoardRepresentation.kingsPosition[chessTeam])
+                            {
+                                Debug.Log("No please!");
+                                break;
+                            }
+                            check++;
+                        }
+
+                        if (opponentResponses[opponentKey].Length == check)
+                        {
+                            possibleTargets.Add(verificationMove);
+                        }
+                        
+                        /*Debug.Log(opponentKey);
+                        if (opponentResponses[opponentKey].Any(response => response.TargetPosition == BoardRepresentation.kingsPosition[chessTeam]))
+                        {
+                            Debug.Log("No please!");
+                        }
+                        else
+                        {
+                            possibleTargets.Add(verificationMove);
+                        }*/
+                    }
+
+                    BoardRepresentation.UndoPreviousMovement(verificationMove.StartPosition,
+                        verificationMove.TargetPosition, GlobalGameVariables.ChessTurn);
+
+                }
+                
+                if (possibleTargets.Count > 0)
+                {
+                    legalMoves[key] = possibleTargets.ToArray();
                 }
             }
-        }*/
+            
+            time -= Time.time;
+            Debug.Log("Calculation ends - " + time + " s.");
+
+            return legalMoves;
+        }
         
-        public Dictionary<int, Move[]> GenerateMoves()
+        public Dictionary<int, Move[]> GenerateMoves(int chessTeam)
         {
             _moves = new Dictionary<int, Move[]>();
-            float time = Time.time;
-            Debug.Log("Starting calculation");
-            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             
             for (int startPosition = 0; startPosition < 64; startPosition++)
             {
@@ -41,8 +100,7 @@ namespace Chess
                 }
             }
 
-            time -= Time.time;
-            Debug.Log("Calculation ends - " + time + " s.");
+            
 
             return _moves;
         }
@@ -85,23 +143,23 @@ namespace Chess
             
             for (int i = 0; i < BoardRepresentation.rooks[chessTeam].Count; i++)
             {
-                GenerateSlidingPieceMoves(BoardRepresentation.rooks[chessTeam][i], 0, 4);
+                GenerateSlidingPieceMoves(BoardRepresentation.rooks[chessTeam][i], 0, 4, chessTeam);
             }
             
             for (int i = 0; i < BoardRepresentation.bishops[chessTeam].Count; i++)
             {
-                GenerateSlidingPieceMoves(BoardRepresentation.bishops[chessTeam][i], 4, 8);
+                GenerateSlidingPieceMoves(BoardRepresentation.bishops[chessTeam][i], 4, 8, chessTeam);
             }
             
             for (int i = 0; i < BoardRepresentation.queens[chessTeam].Count; i++)
             {
-                GenerateSlidingPieceMoves(BoardRepresentation.queens[chessTeam][i], 0, 8);
+                GenerateSlidingPieceMoves(BoardRepresentation.queens[chessTeam][i], 0, 8, chessTeam);
             }
         }
 
-        private void GenerateSlidingPieceMoves(int startingPosition, int startDirIndex, int endDirIndex)
+        private void GenerateSlidingPieceMoves(int startingPosition, int startDirIndex, int endDirIndex, int chessTeam)
         {
-            
+            ChessColour team = chessTeam == 0 ? ChessColour.White : ChessColour.Black;
             List<Move> targetPositions = new List<Move>();
             for (int directionIndex = startDirIndex; directionIndex < endDirIndex; directionIndex++)
             {
@@ -111,14 +169,14 @@ namespace Chess
                     int pieceOnTargetCell = BoardRepresentation.board[targetCell];
                     if (pieceOnTargetCell > 0)
                     {
-                        if (Decoders.DecodeBinaryChessColour(pieceOnTargetCell) == GlobalGameVariables.ChessTurn)
+                        if (Decoders.DecodeBinaryChessColour(pieceOnTargetCell) == team)
                         {
                             break;
                         }
                     
                         targetPositions.Add( (new Move(startingPosition, targetCell)));
                     
-                        if (Decoders.DecodeBinaryChessColour(pieceOnTargetCell) != GlobalGameVariables.ChessTurn)
+                        if (Decoders.DecodeBinaryChessColour(pieceOnTargetCell) != team)
                         {
                             break;
                         }
@@ -139,6 +197,7 @@ namespace Chess
         private void GeneratePawnMoves(int chessTeam)
         {
             int startingRow = GlobalGameVariables.ChessTurn == ChessColour.White ? 1 : 6;
+            ChessColour team = chessTeam == 0 ? ChessColour.White : ChessColour.Black;
 
             for (int i = 0; i < BoardRepresentation.pawns[chessTeam].Count; i++)
             {
@@ -177,7 +236,7 @@ namespace Chess
                             targetCell = startingPosition +
                                          DirectionOffsets[
                                              pawnAttackDirections[chessTeam][j]];
-                            if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != GlobalGameVariables.ChessTurn && BoardRepresentation.board[targetCell] != 0)
+                            if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != team && BoardRepresentation.board[targetCell] != 0)
                             {
                                 targetPositions.Add( (new Move(startingPosition, targetCell)));
                             }

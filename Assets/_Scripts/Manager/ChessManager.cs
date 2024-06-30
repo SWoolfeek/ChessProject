@@ -54,7 +54,7 @@ public class ChessManager : MonoBehaviour
     public void StartChessManager()
     {
         _moveGenerator = new MoveGenerator();
-        _moves = _moveGenerator.GenerateMoves();
+        _moves = _moveGenerator.GenerateLegalMoves();
     }
 
     public void SetBoard(Dictionary<string, GameObject> input)
@@ -110,7 +110,7 @@ public class ChessManager : MonoBehaviour
                 GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
                     ? ChessColour.Black
                     : ChessColour.White;
-                _moves = _moveGenerator.GenerateMoves();
+                _moves = _moveGenerator.GenerateLegalMoves();
             }
             
             DisableAllPossibleTurns();
