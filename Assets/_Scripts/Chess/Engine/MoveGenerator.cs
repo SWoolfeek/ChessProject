@@ -22,52 +22,38 @@ namespace Chess
             Debug.Log("Starting calculation");
             float time = Time.time;
             
-            Debug.Log(BoardRepresentation.kingsPosition[chessTeam]);
-            
+            // All chess in pseudoLegal moves.
             foreach (int key in pseudoLegalMoves.Keys)
             {
                 List<Move> possibleTargets = new List<Move>();
                 
+                // Every move for one chess in pseudoLegal moves.
                 foreach (Move verificationMove in pseudoLegalMoves[key])
                 {
                     
                     BoardRepresentation.MovePiece(verificationMove.StartPosition,verificationMove.TargetPosition);
                     Dictionary<int, Move[]> opponentResponses = GenerateMoves(1 - chessTeam);
 
+                    int check = 0;
+                    
+                    // All opponent chess which can answer for this exact move.
                     foreach (int  opponentKey in opponentResponses.Keys)
                     {
-                        int check = 0;
-
-                        foreach (Move moving in opponentResponses[opponentKey])
-                        {
-
-                            if (moving.StartPosition == 25)
-                            {
-                                Debug.Log(moving.TargetPosition);
-                            }
-                            
-                            if (moving.TargetPosition == BoardRepresentation.kingsPosition[chessTeam])
-                            {
-                                Debug.Log("No please!");
-                                break;
-                            }
-                            check++;
-                        }
-
-                        if (opponentResponses[opponentKey].Length == check)
-                        {
-                            possibleTargets.Add(verificationMove);
-                        }
                         
-                        /*Debug.Log(opponentKey);
+                        // Check if anny opponent can capture a king.
                         if (opponentResponses[opponentKey].Any(response => response.TargetPosition == BoardRepresentation.kingsPosition[chessTeam]))
                         {
-                            Debug.Log("No please!");
                         }
                         else
                         {
-                            possibleTargets.Add(verificationMove);
-                        }*/
+                            check++;
+                        }
+                    }
+                    
+                    // If it is no chess for king, add this moving.
+                    if (check == opponentResponses.Keys.Count)
+                    {
+                        possibleTargets.Add(verificationMove);
                     }
 
                     BoardRepresentation.UndoPreviousMovement(verificationMove.StartPosition,
