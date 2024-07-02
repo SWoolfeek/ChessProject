@@ -17,8 +17,15 @@ namespace Chess
         public PieceList[] knights;
         public PieceList[] queens;
 
+        public bool[][] posibleCastlings = // 0 White, 1 Black. 0 Short, 1 Long.
+        {
+            new bool[] { true, true },
+            new bool[] { true, true }
+        };
+
         private ChessType _previouslyCaptured;
         private bool _previousTurnWasCaptured;
+        private bool _previousTurnWasCastling;
         
         public Board()
         {
@@ -63,7 +70,7 @@ namespace Chess
                     kingsPosition[chessTeam] = position;
                     break;
             }
-
+            
             board[position] = Decoders.DecodeChessToInt(chessTeamInput, chessTypeInput);
         }
 
@@ -104,14 +111,37 @@ namespace Chess
                 
                 BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
                 _previousTurnWasCaptured = true;
+                _previousTurnWasCastling = false;
 
+            }
+            else if (pieceMoving == ChessType.King && (Math.Abs(startingPosition - targetPosition) == 2 ||
+                                                       Math.Abs(startingPosition - targetPosition) == 3))
+            {
+                MadeCastling(chessTeam, startingPosition, targetPosition);
+                _previousTurnWasCaptured = false;
+                _previousTurnWasCastling = true;
             }
             else
             {
                 BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
                 _previousTurnWasCaptured = false;
+                _previousTurnWasCastling = false;
             }
             
+        }
+
+        private void MadeCastling(int chessTeam, int startingPosition, int targetPosition)
+        {
+            if (startingPosition > targetPosition)
+            {
+                Debug.Log("Castling - " + board[targetPosition - 1] );
+                MovePiece(targetPosition - 1, targetPosition + 1);
+            }
+            else
+            {
+                MovePiece(targetPosition + 1, targetPosition - 1);
+            }
+            BasicMoving(startingPosition, targetPosition, chessTeam, ChessType.King);
         }
 
         private void BasicMoving(int startingPosition, int targetPosition, int chessTeam, ChessType pieceMoving)
@@ -144,12 +174,26 @@ namespace Chess
 
         public void UndoPreviousMovement(int startingPosition, int targetPosition, ChessColour chessTeam)
         {
+            
             int team = chessTeam == ChessColour.White ? 0 : 1;
             BasicMoving(targetPosition, startingPosition, team, Decoders.DecodeBinaryChessType(board[targetPosition]));
+            
             if (_previousTurnWasCaptured)
             {
                 ChessColour enemyTeam = chessTeam == ChessColour.White ? ChessColour.Black : ChessColour.White;
                 AddPiece(targetPosition, _previouslyCaptured,enemyTeam);
+            }
+            else if (_previousTurnWasCastling)
+            {
+                Debug.Log("Castling");
+                if (startingPosition > targetPosition)
+                {
+                    BasicMoving(targetPosition + 1, targetPosition - 1 , team, Decoders.DecodeBinaryChessType(board[targetPosition]));
+                }
+                else
+                {
+                    BasicMoving(targetPosition - 1, targetPosition + 1 , team, Decoders.DecodeBinaryChessType(board[targetPosition]));
+                }
             }
         }
     }

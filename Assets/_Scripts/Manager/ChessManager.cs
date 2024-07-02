@@ -83,6 +83,8 @@ public class ChessManager : MonoBehaviour
         int cellPosition = Decoders.DecodePositionToInt(cell);
         int piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
         
+        Debug.Log(piece);
+        
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {
             _pickedChessPosition = cellPosition;
@@ -95,11 +97,13 @@ public class ChessManager : MonoBehaviour
         else if (_pickedChess)
         {
             bool possibleToMove = false;
+            Move moveInfo = new Move();
             foreach (Move move in _moves[_pickedChessPosition])
             {
                 if (move.TargetPosition == cellPosition)
                 {
                     possibleToMove = true;
+                    moveInfo = move;
                 }
             }
 
@@ -107,6 +111,20 @@ public class ChessManager : MonoBehaviour
             {
                 _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>().MoveTo(_cells[cell]);
                 PrecomputedMoveData.BoardRepresentation.MovePiece(_pickedChessPosition,cellPosition);
+                
+                
+                if (moveInfo.Castling)
+                {
+                    if (moveInfo.TargetPosition > moveInfo.StartPosition)
+                    {
+                        _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)]);
+                    }
+                    else
+                    {
+                        _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)]);
+                    }
+                }
+                
                 GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
                     ? ChessColour.Black
                     : ChessColour.White;

@@ -9,9 +9,12 @@ namespace Chess
         public readonly int StartPosition;
         public readonly int TargetPosition;
         
-        public Move (int startPosition, int targetPosition) {
+        public readonly bool Castling;
+        
+        public Move (int startPosition, int targetPosition, bool castling = false) {
             StartPosition = startPosition;
             TargetPosition = targetPosition;
+            Castling = castling;
         }
     }
 }
