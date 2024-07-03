@@ -17,12 +17,14 @@ namespace Chess
         public PieceList[] knights;
         public PieceList[] queens;
 
-        public bool[][] posibleCastlings = // 0 White, 1 Black. 0 Short, 1 Long.
+        public bool[][] possibleCastlings = // 0 White, 1 Black. 0 Short, 1 Long.
         {
             new bool[] { true, true },
             new bool[] { true, true }
         };
 
+        private bool[] _previousPossibleCastlings;
+        
         private ChessType _previouslyCaptured;
         private bool _previousTurnWasCaptured;
         private bool _previousTurnWasCastling;
@@ -76,8 +78,16 @@ namespace Chess
 
         public void MovePiece(int startingPosition, int targetPosition)
         {
+            
+            Debug.Log("Start - " + possibleCastlings[0][0]);
             ChessType pieceMoving = Decoders.DecodeBinaryChessType(board[startingPosition]);
             int chessTeam = Decoders.DecodeBinaryChessColour(board[startingPosition]) == ChessColour.White ? 0 : 1;
+
+            _previousPossibleCastlings = new bool[2];
+            for (int i = 0; i < 2; i++)
+            {
+                _previousPossibleCastlings[i] = possibleCastlings[chessTeam][i];
+            }
             
             if (board[targetPosition] > 0)
             {
@@ -97,6 +107,7 @@ namespace Chess
                         _previouslyCaptured = ChessType.Bishop;
                         break;
                     case ChessType.Rook:
+                        RemovePossibilityToCastling(targetPosition, pieceMoving, chessTeam);
                         rooks[1 - chessTeam].RemovePiece(targetPosition);
                         _previouslyCaptured = ChessType.Rook;
                         break;
@@ -128,6 +139,8 @@ namespace Chess
                 _previousTurnWasCastling = false;
             }
             
+            Debug.Log("End - " + possibleCastlings[0][0]);
+            Debug.Log("Previous - " + _previousPossibleCastlings[0]);
         }
 
         private void MadeCastling(int chessTeam, int startingPosition, int targetPosition)
@@ -161,12 +174,14 @@ namespace Chess
                     bishops[chessTeam].MovePiece(startingPosition,targetPosition);
                     break;
                 case ChessType.Rook:
+                    RemovePossibilityToCastling(startingPosition, pieceMoving, chessTeam);
                     rooks[chessTeam].MovePiece(startingPosition,targetPosition);
                     break;
                 case ChessType.Queen:
                     queens[chessTeam].MovePiece(startingPosition,targetPosition);
                     break;
                 case ChessType.King:
+                    RemovePossibilityToCastling(startingPosition, pieceMoving, chessTeam);
                     kingsPosition[chessTeam] = targetPosition;
                     break;
             }
@@ -178,6 +193,7 @@ namespace Chess
             int team = chessTeam == ChessColour.White ? 0 : 1;
             BasicMoving(targetPosition, startingPosition, team, Decoders.DecodeBinaryChessType(board[targetPosition]));
             
+            
             if (_previousTurnWasCaptured)
             {
                 ChessColour enemyTeam = chessTeam == ChessColour.White ? ChessColour.Black : ChessColour.White;
@@ -185,7 +201,6 @@ namespace Chess
             }
             else if (_previousTurnWasCastling)
             {
-                Debug.Log("Castling");
                 if (startingPosition > targetPosition)
                 {
                     BasicMoving(targetPosition + 1, targetPosition - 1 , team, Decoders.DecodeBinaryChessType(board[targetPosition]));
@@ -193,6 +208,47 @@ namespace Chess
                 else
                 {
                     BasicMoving(targetPosition - 1, targetPosition + 1 , team, Decoders.DecodeBinaryChessType(board[targetPosition]));
+                }
+            }
+            
+            for (int i = 0; i < 2; i++)
+            {
+                possibleCastlings[team][i] = _previousPossibleCastlings[i];
+            }
+        }
+
+        private void RemovePossibilityToCastling(int position, ChessType chessPieceType, int chessTeam)
+        {
+            if (chessPieceType == ChessType.King)
+            {
+                possibleCastlings[chessTeam][0] = false;
+                possibleCastlings[chessTeam][1] = false;
+            }
+            else
+            {
+                if (chessTeam == 0)
+                {
+                    if (position == 0)
+                    {
+                        possibleCastlings[chessTeam][1] = false;
+                        
+                    }
+                    else if (position == 7)
+                    {
+                        possibleCastlings[chessTeam][0] = false; 
+                    }
+                }
+                else
+                {
+                    if (position == 56)
+                    {
+                        possibleCastlings[chessTeam][1] = false;
+                        
+                    }
+                    else if (position == 63)
+                    {
+                        possibleCastlings[chessTeam][0] = false; 
+                    }
                 }
             }
         }

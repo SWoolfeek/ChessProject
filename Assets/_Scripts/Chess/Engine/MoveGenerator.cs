@@ -50,6 +50,12 @@ namespace Chess
                     legalMoves[key] = possibleTargets.ToArray();
                 }
             }
+
+            if (legalMoves.ContainsKey(BoardRepresentation.kingsPosition[chessTeam]))
+            {
+                legalMoves[BoardRepresentation.kingsPosition[chessTeam]] =
+                    legalMoves[BoardRepresentation.kingsPosition[chessTeam]].Concat(KingCastling(chessTeam)).ToArray();
+            }
             
             
             time -= Time.time;
@@ -125,17 +131,26 @@ namespace Chess
                     }
                 }
             }
+            
+            return targetPositions.ToArray();
+        }
 
-
+        private Move[] KingCastling(int chessTeam)
+        {
+            ChessColour colour = chessTeam == 0 ? ChessColour.White : ChessColour.Black;
+            List<Move> targetPositions = new List<Move>();
+            
             if (colour == GlobalGameVariables.ChessTurn)
             {
+                int startingPosition = BoardRepresentation.kingsPosition[chessTeam];
+                
                 Dictionary<int, Move[]> opponentResponses = GenerateMoves(1 - chessTeam);
 
                 if (!CheckIfThisPositionUnderAttack(BoardRepresentation.kingsPosition[chessTeam],opponentResponses))
                 {
                     for (int i = 0; i < 2; i++)
                     {
-                        if (BoardRepresentation.posibleCastlings[chessTeam][i])
+                        if (BoardRepresentation.possibleCastlings[chessTeam][i])
                         {
                             int castling = GenerateCastlingMove(chessTeam, i, opponentResponses);
                             if (castling > -1)
@@ -146,8 +161,7 @@ namespace Chess
                     }
                 }
             }
-            
-            
+
             return targetPositions.ToArray();
         }
 
