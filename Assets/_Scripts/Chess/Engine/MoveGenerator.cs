@@ -17,10 +17,13 @@ namespace Chess
 
         public Dictionary<int, Move[]> GenerateLegalMoves()
         {
+            
+            
             int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             Dictionary<int, Move[]> pseudoLegalMoves = GenerateMoves(chessTeam);
             Dictionary<int, Move[]> legalMoves = new Dictionary<int, Move[]>();
             
+            Debug.Log("Calculation start");
             float time = Time.time;
             // All chess in pseudoLegal moves.
             foreach (int key in pseudoLegalMoves.Keys)
@@ -323,6 +326,10 @@ namespace Chess
                             if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != team && BoardRepresentation.board[targetCell] != 0)
                             {
                                 targetPositions.Add( (new Move(startingPosition, targetCell)));
+                            }
+                            else if (BoardRepresentation.enPassantCapturePosition > -1 && targetCell == BoardRepresentation.enPassantCapturePosition)
+                            {
+                                targetPositions.Add( (new Move(startingPosition, targetCell, false, BoardRepresentation.enPassantPawnPosition)));
                             }
                         }
                     }

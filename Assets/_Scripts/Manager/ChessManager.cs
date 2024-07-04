@@ -124,6 +124,12 @@ public class ChessManager : MonoBehaviour
                         _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)]);
                     }
                 }
+                else if(moveInfo.EnPassantCapture > -1)
+                {
+                    _cells[
+                            Decoders.DecodePositionFromInt(moveInfo.EnPassantCapture)]
+                        .GetComponent<BoardCell>().DestroyChess();
+                }
                 
                 GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
                     ? ChessColour.Black

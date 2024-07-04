@@ -11,6 +11,12 @@ namespace Chess
 
         public int[] kingsPosition;
         
+        private int _previousEnPassantCapturePosition;
+        private int _previousEnPassantPawnPosition;
+        
+        public int enPassantCapturePosition;
+        public int enPassantPawnPosition;
+        
         public PieceList[] pawns;
         public PieceList[] bishops;
         public PieceList[] rooks;
@@ -27,6 +33,7 @@ namespace Chess
         
         private ChessType _previouslyCaptured;
         private bool _previousTurnWasCaptured;
+        private bool _previousTurnWasCapturedEnPassant;
         private bool _previousTurnWasCastling;
         
         public Board()
@@ -78,8 +85,6 @@ namespace Chess
 
         public void MovePiece(int startingPosition, int targetPosition)
         {
-            
-            Debug.Log("Start - " + possibleCastlings[0][0]);
             ChessType pieceMoving = Decoders.DecodeBinaryChessType(board[startingPosition]);
             int chessTeam = Decoders.DecodeBinaryChessColour(board[startingPosition]) == ChessColour.White ? 0 : 1;
 
@@ -121,6 +126,7 @@ namespace Chess
                 }
                 
                 BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
+                _previousTurnWasCapturedEnPassant = false;
                 _previousTurnWasCaptured = true;
                 _previousTurnWasCastling = false;
 
@@ -129,25 +135,53 @@ namespace Chess
                                                        Math.Abs(startingPosition - targetPosition) == 3))
             {
                 MadeCastling(chessTeam, startingPosition, targetPosition);
+                _previousTurnWasCapturedEnPassant = false;
                 _previousTurnWasCaptured = false;
                 _previousTurnWasCastling = true;
             }
+            else if (enPassantCapturePosition == targetPosition && pieceMoving == ChessType.Pawn)
+            {
+                
+                Debug.Log("En passant position - " + enPassantPawnPosition);
+                
+                pawns[1 - chessTeam].RemovePiece(enPassantPawnPosition);
+                board[enPassantPawnPosition] = 0;
+                _previouslyCaptured = ChessType.Pawn;
+
+                _previousTurnWasCapturedEnPassant = true;
+                _previousTurnWasCaptured = true;
+                _previousTurnWasCastling = false;
+                
+                BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
+            }
             else
             {
+                
                 BasicMoving(startingPosition, targetPosition, chessTeam, pieceMoving);
+                _previousTurnWasCapturedEnPassant = false;
                 _previousTurnWasCaptured = false;
                 _previousTurnWasCastling = false;
             }
             
-            Debug.Log("End - " + possibleCastlings[0][0]);
-            Debug.Log("Previous - " + _previousPossibleCastlings[0]);
+            
+            _previousEnPassantCapturePosition = enPassantCapturePosition;
+            _previousEnPassantPawnPosition = enPassantPawnPosition;
+            
+            if (pieceMoving == ChessType.Pawn && Math.Abs(startingPosition - targetPosition) == 16)
+            {
+                enPassantCapturePosition = startingPosition + 8 * Math.Sign(targetPosition - startingPosition);
+                enPassantPawnPosition = targetPosition;
+            }
+            else
+            {
+                enPassantCapturePosition = -99;
+            }
         }
 
         private void MadeCastling(int chessTeam, int startingPosition, int targetPosition)
         {
             if (startingPosition > targetPosition)
             {
-                Debug.Log("Castling - " + board[targetPosition - 1] );
                 MovePiece(targetPosition - 1, targetPosition + 1);
             }
             else
@@ -189,12 +223,17 @@ namespace Chess
 
         public void UndoPreviousMovement(int startingPosition, int targetPosition, ChessColour chessTeam)
         {
+            enPassantPawnPosition = _previousEnPassantPawnPosition;
             
             int team = chessTeam == ChessColour.White ? 0 : 1;
             BasicMoving(targetPosition, startingPosition, team, Decoders.DecodeBinaryChessType(board[targetPosition]));
-            
-            
-            if (_previousTurnWasCaptured)
+
+            if (_previousTurnWasCapturedEnPassant)
+            {
+                ChessColour enemyTeam = chessTeam == ChessColour.White ? ChessColour.Black : ChessColour.White;
+                AddPiece(enPassantPawnPosition, _previouslyCaptured,enemyTeam);
+            }
+            else if (_previousTurnWasCaptured)
             {
                 ChessColour enemyTeam = chessTeam == ChessColour.White ? ChessColour.Black : ChessColour.White;
                 AddPiece(targetPosition, _previouslyCaptured,enemyTeam);
@@ -215,6 +254,9 @@ namespace Chess
             {
                 possibleCastlings[team][i] = _previousPossibleCastlings[i];
             }
+
+            enPassantCapturePosition = _previousEnPassantCapturePosition;
+            
         }
 
         private void RemovePossibilityToCastling(int position, ChessType chessPieceType, int chessTeam)
