@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Chess;
 using Unity.Mathematics;
@@ -18,7 +16,6 @@ public class ChessManager : MonoBehaviour
     [SerializeField] private Color possibleEliminationEmission;
     
     public ChessManager Instance { get; private set; }
-    
 
     private Dictionary<string, GameObject> _cells;
     
@@ -46,7 +43,6 @@ public class ChessManager : MonoBehaviour
 
         Instance = this;
         
-        GlobalGameEventManager.OnChesChooseEvent.AddListener(ChessWasChosen);
         GlobalGameEventManager.OnCellChooseEvent.AddListener(CellPicked);
     }
 
@@ -60,26 +56,12 @@ public class ChessManager : MonoBehaviour
     public void SetBoard(Dictionary<string, GameObject> input)
     {
         _cells = input;
-        
-    }
-
-    private void ChessWasChosen(string cell, List<string> path)
-    {
-        DisableAllPossibleTurns();
-        
-        Debug.Log("With chess = true");
-        _pickedChess = true;
-        _pickedChessName = cell;
-        _calculatedPath = path;
-
-        foreach (string position in path)
-        {
-            ShowPossibleTurn(position);
-        }
     }
 
     private void CellPicked(string cell)
     {
+        DisableAllPossibleTurns();
+        
         int cellPosition = Decoders.DecodePositionToInt(cell);
         int piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
         
@@ -91,7 +73,7 @@ public class ChessManager : MonoBehaviour
             _pickedChess = true;
             foreach (Move move in _moves[cellPosition])
             {
-                ShowPossibleTurn(Decoders.DecodePositionFromInt(move.TargetPosition));
+                ShowPossibleTurn(move);
             }
         }
         else if (_pickedChess)
@@ -131,9 +113,7 @@ public class ChessManager : MonoBehaviour
                         .GetComponent<BoardCell>().DestroyChess();
                 }
                 
-                GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
-                    ? ChessColour.Black
-                    : ChessColour.White;
+                GameManager.Instance.TurnMade();
                 _moves = _moveGenerator.GenerateLegalMoves();
             }
             
@@ -142,34 +122,7 @@ public class ChessManager : MonoBehaviour
         }
     }
 
-    private void CellWasChosen(string cell)
-    {
-        if (_pickedChess)
-        {
-            
-            if (_calculatedPath.Contains(cell))
-            {
-                Debug.Log("move chess");
-                _cells[_pickedChessName].GetComponent<BoardCell>().MoveTo(_cells[cell]);
-                _pickedChess = false;
-            }
-            else
-            {
-                Debug.Log("Wrong path");
-            }
-            
-        }
-        else
-        {
-            Debug.Log("With chess = false");
-            _pickedChess = false;
-            _pickedChessName = cell;
-        }
-
-        DisableAllPossibleTurns();
-    }
-
-    private void PossibleTurnColor(string position, GameObject possiblePositionObject)
+    private void PossibleTurnColor(string position, GameObject possiblePositionObject, ChessType chessMoving)
     {
         bool[] checkResult = GameManager.CheckChess(GlobalGameVariables.ChessTurn, position);
         
@@ -181,6 +134,19 @@ public class ChessManager : MonoBehaviour
             material.color = possibleEliminationColor;
             material.SetColor("_Emission", possibleEliminationEmission);
         }
+        else if ( PrecomputedMoveData.BoardRepresentation.enPassantCapturePosition > -1 && chessMoving == ChessType.Pawn)
+        {
+            if (position == Decoders.DecodePositionFromInt(PrecomputedMoveData.BoardRepresentation.enPassantCapturePosition))
+            {
+                material.color = possibleEliminationColor;
+                material.SetColor("_Emission", possibleEliminationEmission);
+            }
+            else
+            {
+                material.color = possibleTurnColor;
+                material.SetColor("_Emission", possibleTurnEmission);
+            }
+        }
         else
         {
             material.color = possibleTurnColor;
@@ -188,8 +154,10 @@ public class ChessManager : MonoBehaviour
         }
     }
 
-    private void ShowPossibleTurn(string cellPosition)
+    private void ShowPossibleTurn(Move movement)
     {
+        string cellPosition = Decoders.DecodePositionFromInt(movement.TargetPosition);
+        
         if (_inactivePossibleTurnObjects.Count > 0)
         {
             _inactivePossibleTurnObjects[0].transform.position = _cells[cellPosition].transform.position;
@@ -197,7 +165,7 @@ public class ChessManager : MonoBehaviour
             
             _activePossibleTurnObjects.Add(_inactivePossibleTurnObjects[0]);
 
-            PossibleTurnColor(cellPosition, _inactivePossibleTurnObjects[0]);
+            PossibleTurnColor(cellPosition, _inactivePossibleTurnObjects[0], Decoders.DecodeBinaryChessType(PrecomputedMoveData.BoardRepresentation.board[movement.StartPosition]));
             
             _inactivePossibleTurnObjects.RemoveAt(0);
         }
@@ -226,7 +194,6 @@ public class ChessManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        GlobalGameEventManager.OnChesChooseEvent.RemoveListener(ChessWasChosen);
-        GlobalGameEventManager.OnCellChooseEvent.RemoveListener(CellWasChosen);
+        GlobalGameEventManager.OnCellChooseEvent.RemoveListener(CellPicked);
     }
 }

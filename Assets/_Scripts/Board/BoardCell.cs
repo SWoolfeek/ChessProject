@@ -16,36 +16,20 @@ public class BoardCell : MonoBehaviour
 
     public void MoveTo(GameObject target)
     {
-        print(target.name);
         _chess.transform.position = target.transform.position;
         _chess.transform.parent = target.transform;
 
         _chess.GetComponent<ChessPiece>().MoveTo(target.name);
         target.GetComponent<BoardCell>().DestroyChess();
         target.GetComponent<BoardCell>().SetChess(_chess);
-        _hasChess = false;
     }
 
     public void DestroyChess()
     {
         if (_hasChess)
         {
-            Destroy(_chess);
-        }
-    }
-
-    private void PickedChess()
-    {
-        ChessPiece chessController = _chess.GetComponent<ChessPiece>();
-        
-        if (chessController.CheckTeam(GlobalGameVariables.ChessTurn))
-        {
-            List<string> possibleMovement = chessController.CalculateMovement();
-            GlobalGameEventManager.ChooseChess(name, possibleMovement);
-        }
-        else
-        {
-            GlobalGameEventManager.ChooseCell(name);
+            _chess.SetActive(false);
+            _hasChess = false;
         }
     }
 
@@ -61,15 +45,6 @@ public class BoardCell : MonoBehaviour
 
     private void OnMouseDown()
     {
-        /*if (_hasChess)
-        {
-            PickedChess();
-        }
-        else
-        {
-            GlobalGameEventManager.ChooseCell(name);
-        }*/
-        
         GlobalGameEventManager.ChooseCell(name);
     }
 }

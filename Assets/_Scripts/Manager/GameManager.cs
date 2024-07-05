@@ -5,6 +5,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GenerateBoardPrefab boardGenerator;
+
+    [Header("Ui Elements")]
+    
+    [SerializeField] private Camera uiCamera;
+
+    [SerializeField] private GameObject whitePromotions;
+    [SerializeField] private GameObject blackPromotions;
     
     [Header("Managers")]
     
@@ -14,8 +21,8 @@ public class GameManager : MonoBehaviour
     private Dictionary<string, GameObject> _cells;
 
     private static Dictionary<string, GameObject> _cellsStat;
-
-
+    
+    private int _turn = 1;
 
     public static GameManager Instance { get; private set; }
     
@@ -44,9 +51,20 @@ public class GameManager : MonoBehaviour
         chessManager.StartChessManager();
         
     }
-
+    
+    // Return 1 - same team, 1 - does chessexist.
     public static bool[] CheckChess(ChessColour team, string position)
     {
         return _cellsStat[position].GetComponent<BoardCell>().HasChess(team);
+    }
+
+    public void TurnMade()
+    {
+        _turn++;
+        GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
+            ? ChessColour.Black
+            : ChessColour.White;
+        
+        Debug.Log("Turn " + _turn);
     }
 }
