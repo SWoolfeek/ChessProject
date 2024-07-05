@@ -52,7 +52,7 @@ public class ChessGenerationManager : MonoBehaviour
         _cells = input;
     }
     
-    private void SpawnChess(string position, ChessType chessType, ChessColour colour)
+    public void SpawnChess(string position, ChessType chessType, ChessColour colour)
     {
         GameObject createdChess;
         switch (colour)

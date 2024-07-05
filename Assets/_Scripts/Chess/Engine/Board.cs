@@ -83,6 +83,30 @@ namespace Chess
             board[position] = Decoders.DecodeChessToInt(chessTeamInput, chessTypeInput);
         }
 
+        public void PromotePawn(int targetPosition, ChessType chessTypeInput, ChessColour chessTeamInput)
+        {
+            int chessTeam = chessTeamInput == ChessColour.White ? 0 : 1;
+            
+            pawns[chessTeam].RemovePiece(targetPosition);
+            board[targetPosition] = Decoders.DecodeChessToInt(chessTeamInput, chessTypeInput);
+            
+            switch (chessTypeInput)
+            {
+                case ChessType.Knight:
+                    knights[chessTeam].AddPiece(targetPosition);
+                    break;
+                case ChessType.Bishop:
+                    bishops[chessTeam].AddPiece(targetPosition);
+                    break;
+                case ChessType.Rook:
+                    rooks[chessTeam].AddPiece(targetPosition);
+                    break;
+                case ChessType.Queen:
+                    queens[chessTeam].AddPiece(targetPosition);
+                    break;
+            }
+        }
+
         public void MovePiece(int startingPosition, int targetPosition)
         {
             ChessType pieceMoving = Decoders.DecodeBinaryChessType(board[startingPosition]);

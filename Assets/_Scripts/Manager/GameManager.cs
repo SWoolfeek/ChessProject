@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Chess;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -8,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Ui Elements")]
     
-    [SerializeField] private Camera uiCamera;
+    [SerializeField] private GameObject uiCamera;
 
     [SerializeField] private GameObject whitePromotions;
     [SerializeField] private GameObject blackPromotions;
@@ -27,6 +29,7 @@ public class GameManager : MonoBehaviour
     private static Dictionary<string, GameObject> _cellsStat;
     
     private int _turn = 1;
+    private int _promotionPosition = 1;
 
     public static GameManager Instance { get; private set; }
     
@@ -75,13 +78,82 @@ public class GameManager : MonoBehaviour
         return _cellsStat[position].GetComponent<BoardCell>().HasChess(team);
     }
 
-    public void TurnMade()
+    public void TurnMade(bool promotionWasMade, int promotionPosition)
     {
+        Debug.Log("Turn " + _turn);
+
+        if (promotionWasMade)
+        {
+            _promotionPosition = promotionPosition;
+            Promotion();
+        }
+        else
+        {
+            _turn++;
+            GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
+                ? ChessColour.Black
+                : ChessColour.White;
+            chessManager.GenerateNextMovements();
+        }
+    }
+
+    private void Promotion()
+    {
+        uiCamera.SetActive(true);
+        
+        if (GlobalGameVariables.ChessTurn == ChessColour.White)
+        {
+            whitePromotions.SetActive(true);
+        }
+        else
+        {
+            blackPromotions.SetActive(true);
+        }
+    }
+
+    private void PromotionEnded()
+    {
+        uiCamera.SetActive(false);
+        whitePromotions.SetActive(false);
+        blackPromotions.SetActive(false);
+        
         _turn++;
         GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
             ? ChessColour.Black
             : ChessColour.White;
-        
-        Debug.Log("Turn " + _turn);
+        chessManager.GenerateNextMovements();
     }
+
+    #region PromotionButtons
+
+    public void QueenPromotion()
+    {
+        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Queen, GlobalGameVariables.ChessTurn);
+        chessManager.PawnPromotion(_promotionPosition, ChessType.Queen);
+        PromotionEnded();
+    }
+    
+    public void RookPromotion()
+    {
+        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Rook, GlobalGameVariables.ChessTurn);
+        chessManager.PawnPromotion(_promotionPosition, ChessType.Rook);
+        PromotionEnded();
+    }
+    
+    public void BishopPromotion()
+    {
+        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Bishop, GlobalGameVariables.ChessTurn);
+        chessManager.PawnPromotion(_promotionPosition, ChessType.Bishop);
+        PromotionEnded();
+    }
+    
+    public void KnightPromotion()
+    {
+        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Knight, GlobalGameVariables.ChessTurn);
+        chessManager.PawnPromotion(_promotionPosition, ChessType.Knight);
+        PromotionEnded();
+    }
+
+    #endregion
+    
 }

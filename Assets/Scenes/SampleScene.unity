@@ -466,7 +466,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 36694320}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: RookPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &36694320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1880,7 +1892,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 326086821}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: QueenPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &326086821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3402,7 +3426,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 612492758}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: QueenPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &612492758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3528,7 +3564,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 634230480}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: KnightPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &634230480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3858,7 +3906,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardGenerator: {fileID: 1967230086}
-  uiCamera: {fileID: 26191094}
+  uiCamera: {fileID: 26191093}
   whitePromotions: {fileID: 1700447283}
   blackPromotions: {fileID: 592439552}
   chessGenerationManager: {fileID: 1253263348}
@@ -4752,7 +4800,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 959053132}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: BishopPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &959053132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5074,6 +5134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardParameters: {fileID: 11400000, guid: 9ba1093cc7af1664f921fc08cefa11b8, type: 2}
+  chessGenerationManager: {fileID: 1253263348}
   possibleTurnColor: {r: 0.19769835, g: 1, b: 0, a: 1}
   possibleTurnEmission: {r: 0.37443924, g: 3.9999998, b: 0, a: 1}
   possibleEliminationColor: {r: 1, g: 0, b: 0, a: 1}
@@ -5159,7 +5220,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1035214479}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: RookPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1035214479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6689,7 +6762,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1399108810}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: KnightPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1399108810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7453,7 +7538,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1576786182}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 686126390}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: BishopPromotion
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1576786182
 MonoBehaviour:
   m_ObjectHideFlags: 0

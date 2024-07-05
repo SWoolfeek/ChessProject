@@ -6,6 +6,7 @@ using UnityEngine;
 public class ChessManager : MonoBehaviour
 {
     [SerializeField] private BoardParameters boardParameters;
+    [SerializeField] private ChessGenerationManager chessGenerationManager;
 
     [Header("Chess Pick colours")] 
     [SerializeField] private Color possibleTurnColor;
@@ -26,6 +27,7 @@ public class ChessManager : MonoBehaviour
     private List<GameObject> _activePossibleTurnObjects = new List<GameObject>();
     private List<GameObject> _inactivePossibleTurnObjects = new List<GameObject>();
 
+    private bool _promotionMade;
     private bool _pickedChess;
     private int _pickedChessPosition;
     
@@ -58,6 +60,11 @@ public class ChessManager : MonoBehaviour
         _cells = input;
     }
 
+    public void GenerateNextMovements()
+    {
+        _moves = _moveGenerator.GenerateLegalMoves();
+    }
+
     private void CellPicked(string cell)
     {
         DisableAllPossibleTurns();
@@ -88,7 +95,7 @@ public class ChessManager : MonoBehaviour
             Move moveInfo = new Move();
             foreach (Move move in _moves[_pickedChessPosition])
             {
-                if (move.TargetPosition == cellPosition || (cell == PawnPromotion(move) && move.Promotion))
+                if (move.TargetPosition == cellPosition || (cell == PawnPromotionPosition(move) && move.Promotion))
                 {
                     possibleToMove = true;
                     moveInfo = move;
@@ -99,7 +106,7 @@ public class ChessManager : MonoBehaviour
             {
                 if (moveInfo.Promotion)
                 {
-                    Debug.Log("Promotion");
+                    _promotionMade = true;
                 }
                 else
                 {
@@ -131,8 +138,9 @@ public class ChessManager : MonoBehaviour
                     }
                 }
 
-                GameManager.Instance.TurnMade();
-                _moves = _moveGenerator.GenerateLegalMoves();
+                GameManager.Instance.TurnMade(_promotionMade, _pickedChessPosition);
+                
+                _promotionMade = false;
             }
             
             DisableAllPossibleTurns();
@@ -140,7 +148,7 @@ public class ChessManager : MonoBehaviour
         }
     }
 
-    private string PawnPromotion(Move move)
+    private string PawnPromotionPosition(Move move)
     {
         int row = Decoders.DecodePositionFromInt(move.TargetPosition)[1] - '0';
         if (move.TargetPosition > 32)
@@ -152,6 +160,14 @@ public class ChessManager : MonoBehaviour
             return Decoders.DecodePositionFromInt(move.TargetPosition)[0] + (row - 1).ToString();
         }
         
+    }
+
+    public void PawnPromotion(int position, ChessType chessTypeInput)
+    {
+        string cell = Decoders.DecodePositionFromInt(position);
+        
+        _cells[cell].GetComponent<BoardCell>().DestroyChess();
+        chessGenerationManager.SpawnChess(cell, chessTypeInput, GlobalGameVariables.ChessTurn);
     }
 
     private void PossibleTurnColor(string position, GameObject possiblePositionObject, ChessType chessMoving, bool promotion)
@@ -197,7 +213,7 @@ public class ChessManager : MonoBehaviour
         if (movement.Promotion)
         {
             Debug.Log("Show possible Promotion");
-            cellPosition = PawnPromotion(movement);
+            cellPosition = PawnPromotionPosition(movement);
         }
         
         
