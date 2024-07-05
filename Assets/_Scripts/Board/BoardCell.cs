@@ -22,6 +22,8 @@ public class BoardCell : MonoBehaviour
         _chess.GetComponent<ChessPiece>().MoveTo(target.name);
         target.GetComponent<BoardCell>().DestroyChess();
         target.GetComponent<BoardCell>().SetChess(_chess);
+        _hasChess = false;
+        
     }
 
     public void DestroyChess()
@@ -29,7 +31,6 @@ public class BoardCell : MonoBehaviour
         if (_hasChess)
         {
             _chess.SetActive(false);
-            _hasChess = false;
         }
     }
 

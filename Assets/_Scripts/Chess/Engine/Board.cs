@@ -141,7 +141,6 @@ namespace Chess
             }
             else if (enPassantCapturePosition == targetPosition && pieceMoving == ChessType.Pawn)
             {
-                
                 pawns[1 - chessTeam].RemovePiece(enPassantPawnPosition);
                 board[enPassantPawnPosition] = 0;
                 _previouslyCaptured = ChessType.Pawn;
