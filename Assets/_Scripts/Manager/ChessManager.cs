@@ -63,9 +63,13 @@ public class ChessManager : MonoBehaviour
         DisableAllPossibleTurns();
         
         int cellPosition = Decoders.DecodePositionToInt(cell);
-        int piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
+
+        int piece = 0;
         
-        Debug.Log(piece);
+        if (!_pickedChess && 64 >Decoders.DecodePositionToInt(cell) && Decoders.DecodePositionToInt(cell) > -1 )
+        {
+            piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
+        }
         
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {
@@ -82,7 +86,7 @@ public class ChessManager : MonoBehaviour
             Move moveInfo = new Move();
             foreach (Move move in _moves[_pickedChessPosition])
             {
-                if (move.TargetPosition == cellPosition)
+                if (move.TargetPosition == cellPosition || (cell == PawnPromotion(move) && move.Promotion))
                 {
                     possibleToMove = true;
                     moveInfo = move;
@@ -91,28 +95,40 @@ public class ChessManager : MonoBehaviour
 
             if (possibleToMove)
             {
-                _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>().MoveTo(_cells[cell]);
-                PrecomputedMoveData.BoardRepresentation.MovePiece(_pickedChessPosition,cellPosition);
-                
-                
-                if (moveInfo.Castling)
+                if (moveInfo.Promotion)
                 {
-                    if (moveInfo.TargetPosition > moveInfo.StartPosition)
+                    Debug.Log("Promotion");
+                }
+                else
+                {
+                    _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>()
+                        .MoveTo(_cells[cell]);
+                    PrecomputedMoveData.BoardRepresentation.MovePiece(_pickedChessPosition, cellPosition);
+
+
+                    if (moveInfo.Castling)
                     {
-                        _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)]);
+                        if (moveInfo.TargetPosition > moveInfo.StartPosition)
+                        {
+                            _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)]
+                                .GetComponent<BoardCell>()
+                                .MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)]);
+                        }
+                        else
+                        {
+                            _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)]
+                                .GetComponent<BoardCell>()
+                                .MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)]);
+                        }
                     }
-                    else
+                    else if (moveInfo.EnPassantCapture > -1)
                     {
-                        _cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition - 1)].GetComponent<BoardCell>().MoveTo(_cells[Decoders.DecodePositionFromInt(moveInfo.TargetPosition + 1)]);
+                        _cells[
+                                Decoders.DecodePositionFromInt(moveInfo.EnPassantCapture)]
+                            .GetComponent<BoardCell>().DestroyChess();
                     }
                 }
-                else if(moveInfo.EnPassantCapture > -1)
-                {
-                    _cells[
-                            Decoders.DecodePositionFromInt(moveInfo.EnPassantCapture)]
-                        .GetComponent<BoardCell>().DestroyChess();
-                }
-                
+
                 GameManager.Instance.TurnMade();
                 _moves = _moveGenerator.GenerateLegalMoves();
             }
@@ -122,14 +138,33 @@ public class ChessManager : MonoBehaviour
         }
     }
 
-    private void PossibleTurnColor(string position, GameObject possiblePositionObject, ChessType chessMoving)
+    private string PawnPromotion(Move move)
+    {
+        int row = Decoders.DecodePositionFromInt(move.TargetPosition)[1] - '0';
+        if (move.TargetPosition > 32)
+        {
+            return Decoders.DecodePositionFromInt(move.TargetPosition)[0] + (row + 1).ToString();
+        }
+        else
+        {
+            return Decoders.DecodePositionFromInt(move.TargetPosition)[0] + (row - 1).ToString();
+        }
+        
+    }
+
+    private void PossibleTurnColor(string position, GameObject possiblePositionObject, ChessType chessMoving, bool promotion)
     {
         bool[] checkResult = GameManager.CheckChess(GlobalGameVariables.ChessTurn, position);
         
         Material material = possiblePositionObject.transform.GetComponentsInChildren<Transform>(true)[1]
             .GetComponent<MeshRenderer>().material;
 
-        if (checkResult[0] && !checkResult[1])
+        if (promotion)
+        {
+            material.color = possibleTurnColor;
+            material.SetColor("_Emission", possibleTurnEmission);
+        }
+        else if (checkResult[0] && !checkResult[1])
         {
             material.color = possibleEliminationColor;
             material.SetColor("_Emission", possibleEliminationEmission);
@@ -157,6 +192,12 @@ public class ChessManager : MonoBehaviour
     private void ShowPossibleTurn(Move movement)
     {
         string cellPosition = Decoders.DecodePositionFromInt(movement.TargetPosition);
+        if (movement.Promotion)
+        {
+            Debug.Log("Show possible Promotion");
+            cellPosition = PawnPromotion(movement);
+        }
+        
         
         if (_inactivePossibleTurnObjects.Count > 0)
         {
@@ -165,7 +206,7 @@ public class ChessManager : MonoBehaviour
             
             _activePossibleTurnObjects.Add(_inactivePossibleTurnObjects[0]);
 
-            PossibleTurnColor(cellPosition, _inactivePossibleTurnObjects[0], Decoders.DecodeBinaryChessType(PrecomputedMoveData.BoardRepresentation.board[movement.StartPosition]));
+            PossibleTurnColor(cellPosition, _inactivePossibleTurnObjects[0], Decoders.DecodeBinaryChessType(PrecomputedMoveData.BoardRepresentation.board[movement.StartPosition]), movement.Promotion);
             
             _inactivePossibleTurnObjects.RemoveAt(0);
         }

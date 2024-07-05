@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private ChessGenerationManager chessGenerationManager;
     [SerializeField] private ChessManager chessManager;
+
+    [Header("Promotions")] 
+    
+    [SerializeField] private List<Transform> promotionCells;
     
     private Dictionary<string, GameObject> _cells;
 
@@ -42,6 +46,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         _cells = boardGenerator.ReadExistedCells();
+        ReadPromotionCells();
         _cellsStat = _cells;
         
         chessGenerationManager.SetBoard(_cells);
@@ -50,6 +55,18 @@ public class GameManager : MonoBehaviour
         chessGenerationManager.StartChessGenerationManager();
         chessManager.StartChessManager();
         
+    }
+
+    private void ReadPromotionCells()
+    {
+        foreach (Transform promotionCellsByTeam in promotionCells)
+        {
+            Transform[] childrens = promotionCellsByTeam.GetComponentsInChildren<Transform>(true);
+            for (int i = 1; i < childrens.Length; i++)
+            {
+                _cells[childrens[i].name] = childrens[i].gameObject;
+            }
+        }
     }
     
     // Return 1 - same team, 1 - does chessexist.

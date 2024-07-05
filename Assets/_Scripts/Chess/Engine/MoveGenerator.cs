@@ -329,7 +329,7 @@ namespace Chess
                             }
                             else if (BoardRepresentation.enPassantCapturePosition > -1 && targetCell == BoardRepresentation.enPassantCapturePosition)
                             {
-                                targetPositions.Add( (new Move(startingPosition, targetCell, false, BoardRepresentation.enPassantPawnPosition)));
+                                targetPositions.Add( (new Move(startingPosition, targetCell, false,false, BoardRepresentation.enPassantPawnPosition)));
                             }
                         }
                     }
@@ -339,9 +339,15 @@ namespace Chess
                         _pawnMoves[startingPosition] = targetPositions.ToArray();
                     }
                 }
-            
+                else
+                {
+                    Debug.Log("Added Promotion");
+                    targetPositions.Add( (new Move(startingPosition, startingPosition, false,true)));
+                    _pawnMoves[startingPosition] = targetPositions.ToArray();
+                }
                 
             }
+            
         }
 
         private void GenerateKnightMoves(int chessTeam)
