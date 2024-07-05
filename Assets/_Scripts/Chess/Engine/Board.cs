@@ -93,8 +93,7 @@ namespace Chess
             {
                 _previousPossibleCastlings[i] = possibleCastlings[chessTeam][i];
             }
-            
-            if (board[targetPosition] > 0)
+            if (board[targetPosition] > 0 && startingPosition != targetPosition)
             {
                 ChessType targetPiece = Decoders.DecodeBinaryChessType(board[targetPosition]);
                 switch (targetPiece)
@@ -190,31 +189,34 @@ namespace Chess
 
         private void BasicMoving(int startingPosition, int targetPosition, int chessTeam, ChessType pieceMoving)
         {
-            board[targetPosition] = board[startingPosition];
-            board[startingPosition] = 0;
-
-            switch (pieceMoving)
+            if (startingPosition != targetPosition)
             {
-                case ChessType.Pawn:
-                    pawns[chessTeam].MovePiece(startingPosition,targetPosition);
-                    break;
-                case ChessType.Knight:
-                    knights[chessTeam].MovePiece(startingPosition,targetPosition);
-                    break;
-                case ChessType.Bishop:
-                    bishops[chessTeam].MovePiece(startingPosition,targetPosition);
-                    break;
-                case ChessType.Rook:
-                    RemovePossibilityToCastling(startingPosition, pieceMoving, chessTeam);
-                    rooks[chessTeam].MovePiece(startingPosition,targetPosition);
-                    break;
-                case ChessType.Queen:
-                    queens[chessTeam].MovePiece(startingPosition,targetPosition);
-                    break;
-                case ChessType.King:
-                    RemovePossibilityToCastling(startingPosition, pieceMoving, chessTeam);
-                    kingsPosition[chessTeam] = targetPosition;
-                    break;
+                board[targetPosition] = board[startingPosition];
+                board[startingPosition] = 0;
+
+                switch (pieceMoving)
+                {
+                    case ChessType.Pawn:
+                        pawns[chessTeam].MovePiece(startingPosition,targetPosition);
+                        break;
+                    case ChessType.Knight:
+                        knights[chessTeam].MovePiece(startingPosition,targetPosition);
+                        break;
+                    case ChessType.Bishop:
+                        bishops[chessTeam].MovePiece(startingPosition,targetPosition);
+                        break;
+                    case ChessType.Rook:
+                        RemovePossibilityToCastling(startingPosition, pieceMoving, chessTeam);
+                        rooks[chessTeam].MovePiece(startingPosition,targetPosition);
+                        break;
+                    case ChessType.Queen:
+                        queens[chessTeam].MovePiece(startingPosition,targetPosition);
+                        break;
+                    case ChessType.King:
+                        RemovePossibilityToCastling(startingPosition, pieceMoving, chessTeam);
+                        kingsPosition[chessTeam] = targetPosition;
+                        break;
+                }
             }
         }
 

@@ -66,10 +66,12 @@ public class ChessManager : MonoBehaviour
 
         int piece = 0;
         
-        if (!_pickedChess && 64 >Decoders.DecodePositionToInt(cell) && Decoders.DecodePositionToInt(cell) > -1 )
+        if (!_pickedChess && 64 > Decoders.DecodePositionToInt(cell) && Decoders.DecodePositionToInt(cell) > -1 )
         {
             piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
         }
+        
+       
         
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {

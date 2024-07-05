@@ -17,8 +17,6 @@ namespace Chess
 
         public Dictionary<int, Move[]> GenerateLegalMoves()
         {
-            
-            
             int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
             Dictionary<int, Move[]> pseudoLegalMoves = GenerateMoves(chessTeam);
             Dictionary<int, Move[]> legalMoves = new Dictionary<int, Move[]>();
@@ -59,7 +57,6 @@ namespace Chess
                 legalMoves[BoardRepresentation.kingsPosition[chessTeam]] =
                     legalMoves[BoardRepresentation.kingsPosition[chessTeam]].Concat(KingCastling(chessTeam)).ToArray();
             }
-            
             
             time -= Time.time;
             Debug.Log("Calculation ends - " + time + " s.");
@@ -341,7 +338,6 @@ namespace Chess
                 }
                 else
                 {
-                    Debug.Log("Added Promotion");
                     targetPositions.Add( (new Move(startingPosition, startingPosition, false,true)));
                     _pawnMoves[startingPosition] = targetPositions.ToArray();
                 }
