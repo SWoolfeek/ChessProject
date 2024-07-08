@@ -58,12 +58,10 @@ public class ChessGenerationManager : MonoBehaviour
             case ChessColour.White:
                 createdChess = Instantiate(_whiteChess[chessType], _cells[position].transform);
                 _cells[position].GetComponent<BoardCell>().SetChess(createdChess);
-                createdChess.GetComponent<ChessPiece>().SetChess(position);
                 break;
             case ChessColour.Black:
                 createdChess = Instantiate(_blackChess[chessType], _cells[position].transform);
                 _cells[position].GetComponent<BoardCell>().SetChess(createdChess);
-                createdChess.GetComponent<ChessPiece>().SetChess(position);
                 break;
         }
     }

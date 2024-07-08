@@ -185,7 +185,7 @@ public class ChessManager : MonoBehaviour
 
     private void PossibleTurnColor(string position, GameObject possiblePositionObject, ChessType chessMoving, bool promotion)
     {
-        bool[] checkResult = GameManager.CheckChess(GlobalGameVariables.ChessTurn, position);
+        int piece = PrecomputedMoveData.BoardRepresentation.board[Decoders.DecodePositionToInt(position)];
         
         Material material = possiblePositionObject.transform.GetComponentsInChildren<Transform>(true)[1]
             .GetComponent<MeshRenderer>().material;
@@ -195,7 +195,7 @@ public class ChessManager : MonoBehaviour
             material.color = possibleTurnColor;
             material.SetColor("_Emission", possibleTurnEmission);
         }
-        else if (checkResult[0] && !checkResult[1])
+        else if (piece > 0)
         {
             material.color = possibleEliminationColor;
             material.SetColor("_Emission", possibleEliminationEmission);

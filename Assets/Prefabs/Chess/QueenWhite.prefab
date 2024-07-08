@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7988377849241785813}
-  - component: {fileID: -3439126089907368737}
   m_Layer: 0
   m_Name: QueenWhite
   m_TagString: Untagged
@@ -34,20 +33,6 @@ Transform:
   - {fileID: 6812618312766267351}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-3439126089907368737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5370505858999681974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84e77390b716a55459476a1c56cfb4b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  team: 0
-  boardParameters: {fileID: 11400000, guid: 9ba1093cc7af1664f921fc08cefa11b8, type: 2}
 --- !u!1 &5732131620734808247
 GameObject:
   m_ObjectHideFlags: 0

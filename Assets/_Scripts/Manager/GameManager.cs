@@ -77,12 +77,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    
-    // Return 1 - same team, 1 - does chessexist.
-    public static bool[] CheckChess(ChessColour team, string position)
-    {
-        return _cellsStat[position].GetComponent<BoardCell>().HasChess(team);
-    }
 
     public void TeamLoosed()
     {
