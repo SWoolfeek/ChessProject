@@ -62,11 +62,11 @@ public class ChessManager : MonoBehaviour
         _cells = input;
     }
 
-    public void GenerateNextMovements()
+    public void GenerateNextMovements(int halfTurn, int lastCaptureTurn)
     {
         _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
 
-        Recording.Turn turn = new Turn();
+        Recording.Turn turn = new Turn(halfTurn - lastCaptureTurn,halfTurn/2);
         
         Debug.Log(turn.FEN);
 

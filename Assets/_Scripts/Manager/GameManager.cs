@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     private static Dictionary<string, GameObject> _cellsStat;
     
-    private int _turn = 1;
+    private int _turn = 0;
     private int _promotionPosition = 1;
     private int _lastCapture = 0;
 
@@ -127,6 +127,7 @@ public class GameManager : MonoBehaviour
 
         if (promotionWasMade)
         {
+            _lastCapture = _turn + 1;
             _promotionPosition = promotionPosition;
             Promotion();
         }
@@ -158,7 +159,7 @@ public class GameManager : MonoBehaviour
         GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
             ? ChessColour.Black
             : ChessColour.White;
-        chessManager.GenerateNextMovements();
+        chessManager.GenerateNextMovements(_turn, _lastCapture);
     }
 
     private void PromotionEnded()

@@ -24,10 +24,69 @@ namespace Recording
         };
         
         public readonly string FEN;
+        public readonly string boardFEN;
+        public readonly char teamTurn;
+        public readonly string possibleCastling;
+        public readonly string possibleEnPassant;
+        public readonly int halfTurnToDraw;
+        public readonly int fullTurn;
+        
+        
 
-        public Turn()
+        public Turn(int inputHalfTurnToDraw, int inputFullTurn)
         {
-            FEN = ConvertBoardToFEN();
+            boardFEN = ConvertBoardToFEN();
+            teamTurn = GlobalGameVariables.ChessTurn.ToString().ToLower()[0];
+            possibleCastling = ConvertCastlingToFen();
+            possibleEnPassant = ConvertEnPassant();
+            halfTurnToDraw = inputHalfTurnToDraw;
+            fullTurn = inputFullTurn;
+            FEN = boardFEN + " " + teamTurn + " " + possibleCastling + " " + possibleEnPassant + " " + halfTurnToDraw +
+                  " " + fullTurn;
+        }
+
+        private string ConvertEnPassant()
+        {
+            if (PrecomputedMoveData.BoardRepresentation.enPassantCapturePosition != -99)
+            {
+                return Decoders.DecodePositionFromInt(PrecomputedMoveData.BoardRepresentation.enPassantCapturePosition)
+                    .ToLower();
+            }
+
+            return "-";
+        }
+
+        private string ConvertCastlingToFen()
+        {
+            string result = "";
+            bool[][] possibleCastlings = PrecomputedMoveData.BoardRepresentation.possibleCastlings;
+
+            if (possibleCastlings[0][0])
+            {
+                result += "K";
+            }
+
+            if (possibleCastlings[0][1])
+            {
+                result += "Q";
+            }
+
+            if (possibleCastlings[1][0])
+            {
+                result += "k";
+            }
+
+            if (possibleCastlings[1][1])
+            {
+                result += "q";
+            }
+
+            if (result == "")
+            {
+                result = "-";
+            }
+
+            return result;
         }
 
         private string ConvertBoardToFEN()
@@ -57,7 +116,6 @@ namespace Recording
                 
                 if ((i + 1) %8 == 0)
                 {
-                    Debug.Log("i = " + i);
                     if (toSkip > 0)
                     {
                         row += toSkip;
