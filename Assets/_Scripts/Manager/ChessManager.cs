@@ -28,6 +28,7 @@ public class ChessManager : MonoBehaviour
     private List<GameObject> _inactivePossibleTurnObjects = new List<GameObject>();
 
     private bool _promotionMade;
+    private bool _capturedChess;
     private bool _pickedChess;
     private int _pickedChessPosition;
     
@@ -63,6 +64,11 @@ public class ChessManager : MonoBehaviour
     public void GenerateNextMovements()
     {
         _moves = _moveGenerator.GenerateLegalMoves();
+
+        if (_moves.Keys.Count < 1)
+        {
+            GameManager.Instance.TeamLoosed();
+        }
     }
 
     private void CellPicked(string cell)
@@ -110,6 +116,11 @@ public class ChessManager : MonoBehaviour
                 }
                 else
                 {
+                    if (PrecomputedMoveData.BoardRepresentation.board[Decoders.DecodePositionToInt(cell)] > 0)
+                    {
+                        _capturedChess = true;
+                    }
+                    
                     _cells[Decoders.DecodePositionFromInt(_pickedChessPosition)].GetComponent<BoardCell>()
                         .MoveTo(_cells[cell]);
                     PrecomputedMoveData.BoardRepresentation.MovePiece(_pickedChessPosition, cellPosition);
@@ -135,11 +146,13 @@ public class ChessManager : MonoBehaviour
                         _cells[
                                 Decoders.DecodePositionFromInt(moveInfo.EnPassantCapture)]
                             .GetComponent<BoardCell>().DestroyChess();
+                        _capturedChess = true;
                     }
                 }
 
-                GameManager.Instance.TurnMade(_promotionMade, _pickedChessPosition);
+                GameManager.Instance.TurnMade(_promotionMade, _capturedChess, _pickedChessPosition);
                 
+                _capturedChess = false;
                 _promotionMade = false;
             }
             

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Chess;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,6 +15,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject whitePromotions;
     [SerializeField] private GameObject blackPromotions;
+
+    [SerializeField] private GameObject loseWindow;
+    [SerializeField] private TMP_Text resultText;
     
     [Header("Managers")]
     
@@ -30,6 +34,7 @@ public class GameManager : MonoBehaviour
     
     private int _turn = 1;
     private int _promotionPosition = 1;
+    private int _lastCapture = 0;
 
     public static GameManager Instance { get; private set; }
     
@@ -78,9 +83,21 @@ public class GameManager : MonoBehaviour
         return _cellsStat[position].GetComponent<BoardCell>().HasChess(team);
     }
 
-    public void TurnMade(bool promotionWasMade, int promotionPosition)
+    public void TeamLoosed()
+    {
+        ChessColour winner = GlobalGameVariables.ChessTurn == ChessColour.White ? ChessColour.Black : ChessColour.White;
+        resultText.text = winner.ToString() + " won.";
+        loseWindow.SetActive(true);
+    }
+
+    public void TurnMade(bool promotionWasMade, bool captureWasMade, int promotionPosition)
     {
         Debug.Log("Turn " + _turn);
+
+        if (captureWasMade)
+        {
+            _lastCapture = _turn + 1;
+        }
 
         if (promotionWasMade)
         {
@@ -89,12 +106,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            _turn++;
-            GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
-                ? ChessColour.Black
-                : ChessColour.White;
-            chessManager.GenerateNextMovements();
+            EndTurn();
         }
+        
+              
     }
 
     private void Promotion()
@@ -111,17 +126,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void PromotionEnded()
+    private void EndTurn()
     {
-        uiCamera.SetActive(false);
-        whitePromotions.SetActive(false);
-        blackPromotions.SetActive(false);
-        
         _turn++;
         GlobalGameVariables.ChessTurn = GlobalGameVariables.ChessTurn == ChessColour.White
             ? ChessColour.Black
             : ChessColour.White;
         chessManager.GenerateNextMovements();
+    }
+
+    private void PromotionEnded()
+    {
+        uiCamera.SetActive(false);
+        whitePromotions.SetActive(false);
+        blackPromotions.SetActive(false);
+
+        EndTurn();
     }
 
     #region PromotionButtons
