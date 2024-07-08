@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Chess;
 using TMPro;
 using Unity.VisualScripting;
@@ -86,8 +87,39 @@ public class GameManager : MonoBehaviour
     public void TeamLoosed()
     {
         ChessColour winner = GlobalGameVariables.ChessTurn == ChessColour.White ? ChessColour.Black : ChessColour.White;
-        resultText.text = winner.ToString() + " won.";
+        int team = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+        bool underCheck = false;
+
+        MoveGenerator moveGenerator = new MoveGenerator();
+        Dictionary<int, Chess.Move[]> moves = moveGenerator.GenerateLegalMoves(winner);
+        
+        if (moves.Keys.Count < 1)
+        {
+            resultText.text = "It is draw.";
+        }
+        else
+        {
+            foreach (int key in moves.Keys)
+            {
+                if (moves[key].Any(response => response.TargetPosition == PrecomputedMoveData.BoardRepresentation.kingsPosition[team]))
+                {
+                    underCheck = true;
+                    break;
+                }
+            }
+
+            if (underCheck)
+            {
+                resultText.text = winner.ToString() + " won.";
+            }
+            else
+            {
+                resultText.text = "It is draw.";
+            }
+            
+        }
         loseWindow.SetActive(true);
+        
     }
 
     public void TurnMade(bool promotionWasMade, bool captureWasMade, int promotionPosition)

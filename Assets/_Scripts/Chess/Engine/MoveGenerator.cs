@@ -10,14 +10,16 @@ namespace Chess
     
     public class MoveGenerator
     {
+        private ChessColour _chessTurn;
         
         private Dictionary<int, Move[]> _slidingMoves;
         private Dictionary<int, Move[]> _pawnMoves;
         private Dictionary<int, Move[]> _knightMoves;
 
-        public Dictionary<int, Move[]> GenerateLegalMoves()
+        public Dictionary<int, Move[]> GenerateLegalMoves(ChessColour chessTurn)
         {
-            int chessTeam = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+            _chessTurn = chessTurn;
+            int chessTeam = _chessTurn == ChessColour.White ? 0 : 1;
             Dictionary<int, Move[]> pseudoLegalMoves = GenerateMoves(chessTeam);
             Dictionary<int, Move[]> legalMoves = new Dictionary<int, Move[]>();
             
@@ -43,7 +45,7 @@ namespace Chess
                     }
 
                     BoardRepresentation.UndoPreviousMovement(verificationMove.StartPosition,
-                        verificationMove.TargetPosition, GlobalGameVariables.ChessTurn);
+                        verificationMove.TargetPosition, _chessTurn);
                 }
                 
                 if (possibleTargets.Count > 0)
@@ -140,7 +142,7 @@ namespace Chess
             ChessColour colour = chessTeam == 0 ? ChessColour.White : ChessColour.Black;
             List<Move> targetPositions = new List<Move>();
             
-            if (colour == GlobalGameVariables.ChessTurn)
+            if (colour == _chessTurn)
             {
                 int startingPosition = BoardRepresentation.kingsPosition[chessTeam];
                 
@@ -280,7 +282,7 @@ namespace Chess
         {
             _pawnMoves = new Dictionary<int, Move[]>();
             
-            int startingRow = GlobalGameVariables.ChessTurn == ChessColour.White ? 1 : 6;
+            int startingRow = _chessTurn == ChessColour.White ? 1 : 6;
             ChessColour team = chessTeam == 0 ? ChessColour.White : ChessColour.Black;
 
             for (int i = 0; i < BoardRepresentation.pawns[chessTeam].Count; i++)

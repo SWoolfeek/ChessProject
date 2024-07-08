@@ -53,7 +53,7 @@ public class ChessManager : MonoBehaviour
     public void StartChessManager()
     {
         _moveGenerator = new MoveGenerator();
-        _moves = _moveGenerator.GenerateLegalMoves();
+        _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
     }
 
     public void SetBoard(Dictionary<string, GameObject> input)
@@ -63,7 +63,7 @@ public class ChessManager : MonoBehaviour
 
     public void GenerateNextMovements()
     {
-        _moves = _moveGenerator.GenerateLegalMoves();
+        _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
 
         if (_moves.Keys.Count < 1)
         {

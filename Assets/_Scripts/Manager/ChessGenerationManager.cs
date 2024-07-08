@@ -43,8 +43,6 @@ public class ChessGenerationManager : MonoBehaviour
         }
 
         StartingFEN(StartFen);
-        //GenerateChessFromChessEngine();
-       // BaseChessPosition();
     }
     
     public void SetBoard(Dictionary<string, GameObject> input)
