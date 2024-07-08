@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Chess;
+using Recording;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -64,6 +65,10 @@ public class ChessManager : MonoBehaviour
     public void GenerateNextMovements()
     {
         _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
+
+        Recording.Turn turn = new Turn();
+        
+        Debug.Log(turn.FEN);
 
         if (_moves.Keys.Count < 1)
         {
