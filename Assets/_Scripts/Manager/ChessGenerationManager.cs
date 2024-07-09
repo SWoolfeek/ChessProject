@@ -15,7 +15,26 @@ public class ChessGenerationManager : MonoBehaviour
     private Dictionary<string, GameObject> _cells;
 
     private Dictionary<ChessType, GameObject> _whiteChess = new Dictionary<ChessType, GameObject>();
-    private Dictionary<ChessType, GameObject> _blackChess = new Dictionary<ChessType, GameObject>();
+    private Dictionary<ChessType, GameObject> _blackChess = new Dictionary<ChessType, GameObject>();    
+    
+    private Dictionary<ChessType, List<GameObject>> _whiteChessInactive = new Dictionary<ChessType, List<GameObject>>()
+    {
+        { ChessType.Pawn , new List<GameObject>()},
+        { ChessType.King , new List<GameObject>()},
+        { ChessType.Queen , new List<GameObject>()},
+        { ChessType.Knight , new List<GameObject>()},
+        { ChessType.Rook , new List<GameObject>()},
+        { ChessType.Bishop , new List<GameObject>()}
+    };
+    private Dictionary<ChessType, List<GameObject>> _blackChessInactive = new Dictionary<ChessType, List<GameObject>>() 
+    {
+        { ChessType.Pawn , new List<GameObject>()},
+        { ChessType.King , new List<GameObject>()},
+        { ChessType.Queen , new List<GameObject>()},
+        { ChessType.Knight , new List<GameObject>()},
+        { ChessType.Rook , new List<GameObject>()},
+        { ChessType.Bishop , new List<GameObject>()}
+    };
     
     public static ChessGenerationManager Instance { get; private set; }
     
@@ -49,20 +68,54 @@ public class ChessGenerationManager : MonoBehaviour
     {
         _cells = input;
     }
-    
-    public void SpawnChess(string position, ChessType chessType, ChessColour colour)
+
+    public void DeactivatePiece(GameObject piece, ChessType chessType, ChessColour colour)
     {
-        GameObject createdChess;
         switch (colour)
         {
             case ChessColour.White:
-                createdChess = Instantiate(_whiteChess[chessType], _cells[position].transform);
-                _cells[position].GetComponent<BoardCell>().SetChess(createdChess);
+                _whiteChessInactive[chessType].Add(piece);
                 break;
             case ChessColour.Black:
-                createdChess = Instantiate(_blackChess[chessType], _cells[position].transform);
-                _cells[position].GetComponent<BoardCell>().SetChess(createdChess);
+                _blackChessInactive[chessType].Add(piece);
                 break;
+        }
+    }
+    
+    public void SpawnChess(string position, ChessType chessType, ChessColour colour)
+    {
+        GameObject createdChess = PieceSpawn(position, chessType, colour);
+        _cells[position].GetComponent<BoardCell>().SetChess(createdChess);
+    }
+
+    private GameObject PieceSpawn( string position, ChessType chessType, ChessColour colour)
+    {
+        GameObject result;
+        if (colour == ChessColour.White)
+        {
+            if (_whiteChessInactive[chessType].Count > 0)
+            {
+                _whiteChessInactive[chessType][0].SetActive(true);
+                result = _whiteChessInactive[chessType][0];
+                result.transform.parent = _cells[position].transform;
+                _whiteChessInactive[chessType].RemoveAt(0);
+                return result;
+            }
+            
+            return Instantiate(_whiteChess[chessType], _cells[position].transform);
+        }
+        else
+        {
+            if (_blackChessInactive[chessType].Count > 0)
+            {
+                _blackChessInactive[chessType][0].SetActive(true);
+                result = _blackChessInactive[chessType][0];
+                result.transform.parent = _cells[position].transform;
+                _blackChessInactive[chessType].RemoveAt(0);
+                return result;
+            }
+            
+            return Instantiate(_blackChess[chessType], _cells[position].transform);
         }
     }
 
