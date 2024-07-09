@@ -68,6 +68,8 @@ public class ChessManager : MonoBehaviour
 
         Recording.Turn turn = new Turn(halfTurn - lastCaptureTurn,halfTurn/2);
         
+        Game.Instance.AddTurn(halfTurn, turn);
+        
         Debug.Log(turn.FEN);
 
         if (_moves.Keys.Count < 1)
