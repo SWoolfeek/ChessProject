@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSize: 8
   cellSize: 1
-  possibleTurnPrefab: {fileID: 1939112150261164482, guid: 5277c48c238fbe840a5fd22ad80291bb,
+  possibleTurnPrefab: {fileID: 2289581402772210359, guid: 126a47b6a015ef84799928385043f56c,
     type: 3}

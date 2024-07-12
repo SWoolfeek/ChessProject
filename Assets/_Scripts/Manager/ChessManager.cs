@@ -200,30 +200,30 @@ public class ChessManager : MonoBehaviour
         if (promotion)
         {
             material.color = possibleTurnColor;
-            material.SetColor("_Emission", possibleTurnEmission);
+            material.SetColor("_EmissionColor", possibleTurnEmission);
         }
         else if (piece > 0)
         {
             material.color = possibleEliminationColor;
-            material.SetColor("_Emission", possibleEliminationEmission);
+            material.SetColor("_EmissionColor", possibleEliminationEmission);
         }
         else if ( PrecomputedMoveData.BoardRepresentation.enPassantCapturePosition > -1 && chessMoving == ChessType.Pawn)
         {
             if (position == Decoders.DecodePositionFromInt(PrecomputedMoveData.BoardRepresentation.enPassantCapturePosition))
             {
                 material.color = possibleEliminationColor;
-                material.SetColor("_Emission", possibleEliminationEmission);
+                material.SetColor("_EmissionColor", possibleEliminationEmission);
             }
             else
             {
                 material.color = possibleTurnColor;
-                material.SetColor("_Emission", possibleTurnEmission);
+                material.SetColor("_EmissionColor", possibleTurnEmission);
             }
         }
         else
         {
             material.color = possibleTurnColor;
-            material.SetColor("_Emission", possibleTurnEmission);
+            material.SetColor("_EmissionColor", possibleTurnEmission);
         }
     }
 
