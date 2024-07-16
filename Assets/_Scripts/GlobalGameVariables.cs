@@ -20,4 +20,5 @@ public class GlobalGameVariables
     }
 
     public static ChessColour ChessTurn = ChessColour.White;
+    public static string GameId;
 }

@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     private int _turn = 0;
     private int _promotionPosition = 1;
     private int _lastCapture = 0;
+    private bool _loaded;
 
     public static GameManager Instance { get; private set; }
     
@@ -55,6 +56,16 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (!_loaded)
+        {
+            GenerateRandomId idGenerator = new GenerateRandomId();
+            GlobalGameVariables.GameId = idGenerator.Generate();
+        }
+        else
+        {
+            
+        }
+        
         _cells = boardGenerator.ReadExistedCells();
         ReadPromotionCells();
         _cellsStat = _cells;
@@ -66,6 +77,8 @@ public class GameManager : MonoBehaviour
         chessManager.StartChessManager();
         
     }
+    
+    
 
     private void ReadPromotionCells()
     {
@@ -161,6 +174,8 @@ public class GameManager : MonoBehaviour
             ? ChessColour.Black
             : ChessColour.White;
         chessManager.GenerateNextMovements(_turn, _lastCapture);
+        
+        Game.Instance.SaveGame();
     }
 
     private void PromotionEnded()

@@ -23,13 +23,13 @@ namespace Recording
             { 22, 'q' }
         };
         
-        public readonly string FEN;
-        public readonly string boardFEN;
-        public readonly char teamTurn;
-        public readonly string possibleCastling;
-        public readonly string possibleEnPassant;
-        public readonly int halfTurnToDraw;
-        public readonly int fullTurn;
+        public string FEN;
+        public string boardFEN;
+        public char teamTurn;
+        public string possibleCastling;
+        public string possibleEnPassant;
+        public int halfTurnToDraw;
+        public int fullTurn;
         
         
 
