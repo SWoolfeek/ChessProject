@@ -192,7 +192,13 @@ public class ChessManager : MonoBehaviour
 
     private void PossibleTurnColor(string position, GameObject possiblePositionObject, ChessType chessMoving, bool promotion)
     {
-        int piece = PrecomputedMoveData.BoardRepresentation.board[Decoders.DecodePositionToInt(position)];
+
+        int piece = 0;
+        if (Decoders.DecodePositionToInt(position) < 64 && Decoders.DecodePositionToInt(position) > -1)
+        {
+            piece = PrecomputedMoveData.BoardRepresentation.board[Decoders.DecodePositionToInt(position)];
+        }
+        
         
         Material material = possiblePositionObject.transform.GetComponentsInChildren<Transform>(true)[1]
             .GetComponent<MeshRenderer>().material;
