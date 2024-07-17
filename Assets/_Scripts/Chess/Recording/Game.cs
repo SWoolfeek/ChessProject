@@ -45,27 +45,30 @@ namespace Recording
 
     public class SaveData
     {
-        public List<int> _keys;
-        public List<string> _values;
+        public int turnsAmount;
+        public List<int> keys;
+        public List<string> values;
 
         public void FromDictionary(Dictionary<int, Turn> turns)
         {
-            _keys = new List<int>();
-            _values = new List<string>();
+            keys = new List<int>();
+            values = new List<string>();
+            turnsAmount = 0;
             
             foreach (int key in turns.Keys)
             {
-                _keys.Add(key);
-                _values.Add(JsonUtility.ToJson(turns[key]));
+                turnsAmount++;
+                keys.Add(key);
+                values.Add(JsonUtility.ToJson(turns[key]));
             }
         }
 
         public Dictionary<int, Turn> ToDictionary()
         {
             Dictionary<int, Turn> result = new Dictionary<int, Turn>();
-            for (int i = 0; i < _keys.Count; i++)
+            for (int i = 0; i < keys.Count; i++)
             {
-                result[_keys[i]] = JsonUtility.FromJson<Turn>(_values[i]);
+                result[keys[i]] = JsonUtility.FromJson<Turn>(values[i]);
             }
 
             return result;
