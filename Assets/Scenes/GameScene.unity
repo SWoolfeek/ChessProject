@@ -3846,6 +3846,7 @@ MonoBehaviour:
   promotionCells:
   - {fileID: 1461051564}
   - {fileID: 299167305}
+  gameSettings: {fileID: 11400000, guid: 6decf1b3f8b0d89479f4c351417a5e10, type: 2}
 --- !u!1001 &687487690
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Chess;
 using Recording;
+using Settings;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -30,6 +31,10 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private List<Transform> promotionCells;
     
+    [Header("Settings")] 
+    
+    [SerializeField] private GameSettings gameSettings;
+    
     private Dictionary<string, GameObject> _cells;
 
     private static Dictionary<string, GameObject> _cellsStat;
@@ -56,16 +61,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (!_loaded)
-        {
-            GenerateRandomId idGenerator = new GenerateRandomId();
-            GlobalGameVariables.GameId = idGenerator.Generate();
-        }
-        else
-        {
-            
-        }
-        
         _cells = boardGenerator.ReadExistedCells();
         ReadPromotionCells();
         _cellsStat = _cells;
@@ -73,12 +68,45 @@ public class GameManager : MonoBehaviour
         chessGenerationManager.SetBoard(_cells);
         chessManager.SetBoard(_cells);
         
-        chessGenerationManager.StartChessGenerationManager();
-        chessManager.StartChessManager();
+        if (!gameSettings.PreviousGameUnfinished)
+        {
+            GenerateRandomId idGenerator = new GenerateRandomId();
+            GlobalGameVariables.GameId = idGenerator.Generate();
+            
+            Game.Instance.SaveGame();
+            gameSettings.PreviousGameUId = GlobalGameVariables.GameId;
+            gameSettings.PreviousGameUnfinished = true;
+            gameSettings.SaveSettings();
+            
+            chessGenerationManager.StartChessGenerationManager(false);
+        }
+        else
+        {
+            GlobalGameVariables.GameId = gameSettings.PreviousGameUId;
+            Game.Instance.LoadGame();
+            LoadGame();
+        }
         
+        chessManager.StartChessManager();
     }
-    
-    
+
+    private void LoadGame()
+    {
+        Turn lastTurn = Game.Instance.ReadLastTurn();
+        chessGenerationManager.StartChessGenerationManager(true, Game.Instance.ReadLastTurn().FEN);
+        GlobalGameVariables.ChessTurn = lastTurn.FEN.Split(' ')[1] == "b" ? ChessColour.Black : ChessColour.White;
+        if (lastTurn.possibleEnPassant.Length > 1)
+        {
+            PrecomputedMoveData.BoardRepresentation.LoadEnPassant(lastTurn.possibleEnPassant);
+        }
+        
+
+        int teamTurnAdd = GlobalGameVariables.ChessTurn == ChessColour.White ? 0 : 1;
+        _turn = lastTurn.fullTurn * 2 + teamTurnAdd;
+        Debug.Log("Turn - " + _turn);
+
+        _lastCapture = _turn - lastTurn.halfTurnToDraw;
+    }
 
     private void ReadPromotionCells()
     {
@@ -126,6 +154,10 @@ public class GameManager : MonoBehaviour
             }
             
         }
+        
+        gameSettings.PreviousGameUnfinished = false;
+        gameSettings.SaveSettings();
+        
         loseWindow.SetActive(true);
         
     }
@@ -174,8 +206,6 @@ public class GameManager : MonoBehaviour
             ? ChessColour.Black
             : ChessColour.White;
         chessManager.GenerateNextMovements(_turn, _lastCapture);
-        
-        Game.Instance.SaveGame();
     }
 
     private void PromotionEnded()

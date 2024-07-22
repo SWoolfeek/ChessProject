@@ -64,11 +64,11 @@ public class ChessManager : MonoBehaviour
 
     public void GenerateNextMovements(int halfTurn, int lastCaptureTurn)
     {
-        _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
-
-        Recording.Turn turn = new Turn(halfTurn - lastCaptureTurn,halfTurn/2);
-        
+        Turn turn = new Turn(halfTurn - lastCaptureTurn,halfTurn/2);
         Game.Instance.AddTurn(halfTurn, turn);
+        Game.Instance.SaveGame();
+        
+        _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
 
         if (_moves.Keys.Count < 1)
         {
@@ -88,8 +88,6 @@ public class ChessManager : MonoBehaviour
         {
             piece = PrecomputedMoveData.BoardRepresentation.board[cellPosition];
         }
-        
-       
         
         if (piece != 0 && Decoders.DecodeBinaryChessColour(piece) == GlobalGameVariables.ChessTurn && _moves.ContainsKey(cellPosition))
         {

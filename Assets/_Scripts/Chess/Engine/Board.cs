@@ -54,6 +54,14 @@ namespace Chess
             queens = new PieceList[] { new PieceList (9), new PieceList (9) };
         }
 
+        public void LoadEnPassant(string whereCapture)
+        {
+            int position = Decoders.DecodePositionToInt(whereCapture);
+            enPassantCapturePosition = position;
+            int teamMove = GlobalGameVariables.ChessTurn == ChessColour.White ? -8 : 8;
+            enPassantPawnPosition = enPassantCapturePosition + teamMove;
+        }
+
         public void AddPiece(int position, ChessType chessTypeInput, ChessColour chessTeamInput)
         {
             int chessTeam = chessTeamInput == ChessColour.White ? 0 : 1;

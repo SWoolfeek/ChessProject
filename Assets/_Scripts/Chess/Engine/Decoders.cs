@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -91,7 +92,7 @@ namespace Chess
         public static int DecodePositionToInt(string position)
         {
             int row = (position[1] - '0') - 1;
-            int column = Letters.IndexOf(position[0]);
+            int column = Letters.IndexOf(Char.ToUpper(Char.ToLower(position[0])));
 
             return row * 8 + column;
         }

@@ -328,6 +328,7 @@ namespace Chess
                             }
                             else if (BoardRepresentation.enPassantCapturePosition > -1 && targetCell == BoardRepresentation.enPassantCapturePosition)
                             {
+                                Debug.Log("EnPassant - " + BoardRepresentation.enPassantCapturePosition);
                                 targetPositions.Add( (new Move(startingPosition, targetCell, false,false, BoardRepresentation.enPassantPawnPosition)));
                             }
                         }

@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 
@@ -21,20 +23,43 @@ namespace Recording
             return turns[turnNumber];
         }
 
+        public Turn ReadLastTurn()
+        {
+            return ReadExactTurn(Mathf.Max(turns.Keys.ToArray()));
+        }
+
         public void SaveGame()
         {
+            Debug.Log("Save started");
             SaveData data = new SaveData();
             data.FromDictionary(turns);
             
             if (File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
             {
-                File.Delete("Saves/" + GlobalGameVariables.GameId + ".json");
+                File.WriteAllText("Saves/" + GlobalGameVariables.GameId + ".json", String.Empty);
             }
+            
             
             var file = File.CreateText("Saves/" + GlobalGameVariables.GameId + ".json");
             file.WriteLine(JsonUtility.ToJson(data));
             
             file.Close();
+            Debug.Log("Save ends");
+        }
+
+        public void LoadGame()
+        {
+            if(File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
+            {
+                SaveData data =
+                    JsonUtility.FromJson<SaveData>(File.ReadAllText("Saves/" + GlobalGameVariables.GameId + ".json"));
+
+                turns = data.ToDictionary();
+            }
+            else
+            {
+                Debug.LogError("Such save do not exist!");
+            }
         }
 
         private Game()

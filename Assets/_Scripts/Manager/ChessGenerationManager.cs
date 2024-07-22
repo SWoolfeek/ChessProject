@@ -53,7 +53,7 @@ public class ChessGenerationManager : MonoBehaviour
     }
     
     // Start is called before the first frame update
-    public void StartChessGenerationManager()
+    public void StartChessGenerationManager(bool load, string fen = "")
     {
         for (int i = 0; i < whiteChess.Count; i++)
         {
@@ -61,7 +61,15 @@ public class ChessGenerationManager : MonoBehaviour
             _blackChess[blackChess[i].chessType] = blackChess[i].chessPrefab;
         }
 
-        StartingFEN(StartFen);
+        if (load)
+        {
+            StartingFEN(fen);
+        }
+        else
+        {
+            StartingFEN(StartFen);
+        }
+        
     }
     
     public void SetBoard(Dictionary<string, GameObject> input)
