@@ -132,6 +132,7 @@ public class GameManager : MonoBehaviour
         if (moves.Keys.Count < 1)
         {
             resultText.text = "It is draw.";
+            GlobalGameVariables.gameStatus = GameEndings.Draw;
         }
         else
         {
@@ -147,10 +148,20 @@ public class GameManager : MonoBehaviour
             if (underCheck)
             {
                 resultText.text = winner.ToString() + " won.";
+                if (winner == ChessColour.White)
+                {
+                    GlobalGameVariables.gameStatus = GameEndings.White;
+                }
+                else
+                {
+                    GlobalGameVariables.gameStatus = GameEndings.Black;
+                }
+                
             }
             else
             {
                 resultText.text = "It is draw.";
+                GlobalGameVariables.gameStatus = GameEndings.Draw;
             }
             
         }

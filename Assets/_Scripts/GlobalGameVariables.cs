@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Recording;
 using UnityEngine;
 
 public class GlobalGameVariables
@@ -21,4 +22,5 @@ public class GlobalGameVariables
 
     public static ChessColour ChessTurn = ChessColour.White;
     public static string GameId;
+    public static GameEndings gameStatus = GameEndings.Unfinished;
 }

@@ -66,7 +66,7 @@ public class ChessManager : MonoBehaviour
     {
         Turn turn = new Turn(halfTurn - lastCaptureTurn,halfTurn/2);
         Game.Instance.AddTurn(halfTurn, turn);
-        Game.Instance.SaveGame();
+        
         
         _moves = _moveGenerator.GenerateLegalMoves(GlobalGameVariables.ChessTurn);
 
@@ -74,6 +74,8 @@ public class ChessManager : MonoBehaviour
         {
             GameManager.Instance.TeamLoosed();
         }
+        
+        Game.Instance.SaveGame();
     }
 
     private void CellPicked(string cell)

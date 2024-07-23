@@ -33,6 +33,7 @@ namespace Recording
             Debug.Log("Save started");
             SaveData data = new SaveData();
             data.FromDictionary(turns);
+            data.gameEnds = GlobalGameVariables.gameStatus;
             
             if (File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
             {
@@ -70,6 +71,7 @@ namespace Recording
 
     public class SaveData
     {
+        public GameEndings gameEnds;
         public int turnsAmount;
         public List<int> keys;
         public List<string> values;
@@ -99,5 +101,13 @@ namespace Recording
             return result;
         }
         
+    }
+
+    public enum GameEndings
+    {
+        Unfinished = 0,
+        Draw = 1,
+        White = 2,
+        Black = 3
     }
 }
