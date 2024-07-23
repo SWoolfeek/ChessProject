@@ -46,10 +46,18 @@ namespace Settings
             }
             SavedGameSettings data =
                 JsonUtility.FromJson<SavedGameSettings>(File.ReadAllText("Saves/GameSettings.json"));
-            
 
-            PreviousGameUnfinished = data.PreviousGameUnfinished;
-            PreviousGameUId = data.PreviousGameUId;
+
+            if (File.Exists("Saves/" + data.PreviousGameUId + ".json"))
+            {
+                PreviousGameUnfinished = data.PreviousGameUnfinished;
+                PreviousGameUId = data.PreviousGameUId;
+            }
+            else
+            {
+                PreviousGameUnfinished = false;
+            }
+            
         }
     }
 
