@@ -19,8 +19,19 @@ public class MenuManager : MonoBehaviour
     
     [SerializeField] private LoadManager loadManager;
     
+    public static MenuManager Instance { get; private set; }
+    
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Debug.LogError("Instance GameManager already exists!");
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        
         LoadSettings();
         if (gameSettings.PreviousGameUnfinished)
         {
@@ -50,9 +61,12 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene("GameScene");
     }
 
-    public void LoadGame()
+    public void LoadGame(string gameUId)
     {
-        
+        gameSettings.PreviousGameUnfinished = true;
+        gameSettings.PreviousGameUId = gameUId;
+        gameSettings.SaveSettings();
+        SceneManager.LoadScene("GameScene");
     }
 
     public void Settings()

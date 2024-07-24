@@ -30,7 +30,7 @@ public class LoadManager : MonoBehaviour
         foreach (DateTime key in _dataKeys)
         {
             LoadData data = _loadDatas[key.ToString()];
-            Instantiate(loadGamePrefab, loadElementsParent.transform).GetComponent<LoadElement>().SetData(data.gameEnds.ToString(), key.ToString(), data.turns.ToString());
+            Instantiate(loadGamePrefab, loadElementsParent.transform).GetComponent<LoadElement>().SetData(data.gameEnds, key.ToString(), data.UId);
         }
     }
 
