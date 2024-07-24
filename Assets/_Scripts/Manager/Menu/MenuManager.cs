@@ -14,6 +14,10 @@ public class MenuManager : MonoBehaviour
     [Header("Buttons")] 
     
     [SerializeField] private GameObject continueButton;
+
+    [Header("Managers")] 
+    
+    [SerializeField] private LoadManager loadManager;
     
     private void Awake()
     {
@@ -22,6 +26,11 @@ public class MenuManager : MonoBehaviour
         {
             continueButton.SetActive(true);
         }
+    }
+
+    private void Start()
+    {
+        loadManager.StartLoadManager();
     }
 
     private void LoadSettings()

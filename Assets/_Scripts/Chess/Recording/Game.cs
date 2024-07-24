@@ -34,6 +34,7 @@ namespace Recording
             SaveData data = new SaveData();
             data.FromDictionary(turns);
             data.gameEnds = GlobalGameVariables.gameStatus;
+            data.dateLastTurn = DateTime.Now.ToString();
             
             if (File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
             {
@@ -72,6 +73,7 @@ namespace Recording
     public class SaveData
     {
         public GameEndings gameEnds;
+        public string dateLastTurn;
         public int turnsAmount;
         public List<int> keys;
         public List<string> values;
