@@ -73,22 +73,15 @@ public class RewatchManager : MonoBehaviour
     {
         chessGenerationManager.LoadTurn(_turns[turn].FEN);
     }
-    
-    // Testing purposes.
 
-    public void Turn1()
+    public void NextTurn()
     {
-        LoadTurn(1);
+        slider.value++;
     }
     
-    public void Turn2()
+    public void PreviousTurn()
     {
-        LoadTurn(2);
-    }
-    
-    public void Turn3()
-    {
-        LoadTurn(3);
+        slider.value--;
     }
     
 }
