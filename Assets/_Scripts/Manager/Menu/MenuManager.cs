@@ -25,7 +25,7 @@ public class MenuManager : MonoBehaviour
     {
         if (Instance != null)
         {
-            Debug.LogError("Instance GameManager already exists!");
+            Debug.LogError("Instance MenuManager already exists!");
             Destroy(gameObject);
             return;
         }

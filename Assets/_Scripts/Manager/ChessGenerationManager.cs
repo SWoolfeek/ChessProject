@@ -8,16 +8,16 @@ using UnityEngine;
 public class ChessGenerationManager : MonoBehaviour
 {
     [Header("Chess")]
-    [SerializeField] private List<ChessPiecePrefabContainer> whiteChess;
-    [SerializeField] private List<ChessPiecePrefabContainer> blackChess;
+    [SerializeField] protected List<ChessPiecePrefabContainer> whiteChess;
+    [SerializeField] protected List<ChessPiecePrefabContainer> blackChess;
     
-    private ChessData rozkladka;
-    private Dictionary<string, GameObject> _cells;
+    protected ChessData rozkladka;
+    protected Dictionary<string, GameObject> _cells;
 
-    private Dictionary<ChessType, GameObject> _whiteChess = new Dictionary<ChessType, GameObject>();
-    private Dictionary<ChessType, GameObject> _blackChess = new Dictionary<ChessType, GameObject>();    
+    protected Dictionary<ChessType, GameObject> _whiteChess = new Dictionary<ChessType, GameObject>();
+    protected Dictionary<ChessType, GameObject> _blackChess = new Dictionary<ChessType, GameObject>();    
     
-    private Dictionary<ChessType, List<GameObject>> _whiteChessInactive = new Dictionary<ChessType, List<GameObject>>()
+    protected Dictionary<ChessType, List<GameObject>> _whiteChessInactive = new Dictionary<ChessType, List<GameObject>>()
     {
         { ChessType.Pawn , new List<GameObject>()},
         { ChessType.King , new List<GameObject>()},
@@ -26,7 +26,7 @@ public class ChessGenerationManager : MonoBehaviour
         { ChessType.Rook , new List<GameObject>()},
         { ChessType.Bishop , new List<GameObject>()}
     };
-    private Dictionary<ChessType, List<GameObject>> _blackChessInactive = new Dictionary<ChessType, List<GameObject>>() 
+    protected Dictionary<ChessType, List<GameObject>> _blackChessInactive = new Dictionary<ChessType, List<GameObject>>() 
     {
         { ChessType.Pawn , new List<GameObject>()},
         { ChessType.King , new List<GameObject>()},
@@ -36,21 +36,8 @@ public class ChessGenerationManager : MonoBehaviour
         { ChessType.Bishop , new List<GameObject>()}
     };
     
-    public static ChessGenerationManager Instance { get; private set; }
     
-    private const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Debug.LogError("Instance ChessGenerationManager already exists!");
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-    }
+    protected const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     // Start is called before the first frame update
     public void StartChessGenerationManager(bool load, string fen = "")
@@ -96,17 +83,19 @@ public class ChessGenerationManager : MonoBehaviour
         _cells[position].GetComponent<BoardCell>().SetChess(createdChess);
     }
 
-    private GameObject PieceSpawn( string position, ChessType chessType, ChessColour colour)
+    protected GameObject PieceSpawn( string position, ChessType chessType, ChessColour colour)
     {
         GameObject result;
         if (colour == ChessColour.White)
         {
             if (_whiteChessInactive[chessType].Count > 0)
             {
-                _whiteChessInactive[chessType][0].SetActive(true);
+                
                 result = _whiteChessInactive[chessType][0];
-                result.transform.parent = _cells[position].transform;
                 _whiteChessInactive[chessType].RemoveAt(0);
+                result.SetActive(true);
+                result.transform.parent = _cells[position].transform;
+                result.transform.localPosition = Vector3.zero;
                 return result;
             }
             
@@ -116,55 +105,20 @@ public class ChessGenerationManager : MonoBehaviour
         {
             if (_blackChessInactive[chessType].Count > 0)
             {
-                _blackChessInactive[chessType][0].SetActive(true);
+                
                 result = _blackChessInactive[chessType][0];
-                result.transform.parent = _cells[position].transform;
                 _blackChessInactive[chessType].RemoveAt(0);
+                result.SetActive(true);
+                result.transform.parent = _cells[position].transform;
+                result.transform.localPosition = Vector3.zero;
                 return result;
             }
             
             return Instantiate(_blackChess[chessType], _cells[position].transform);
         }
     }
-
-    private void BaseChessPosition()
-    {
-        Dictionary<string, ChessType> positions;
-        BasicChessPosition basicChess = new BasicChessPosition();
-        positions = basicChess.BasicWhitePositions();
-
-        foreach (string position in positions.Keys)
-        {
-            SpawnChess(position, positions[position], ChessColour.White);
-        }
-        
-        positions = basicChess.BasicBlackPositions();
-
-        foreach (string position in positions.Keys)
-        {
-            SpawnChess(position, positions[position], ChessColour.Black);
-        }
-
-    }
-
-    private void GenerateChessFromChessEngine()
-    {
-        for (int i = 0; i < Chess.PrecomputedMoveData.BoardRepresentation.board.Length; i++)
-        {
-            SpawnDecrypt(i, Chess.PrecomputedMoveData.BoardRepresentation.board[i]);
-        }
-    }
-
-    private void SpawnDecrypt(int position, int piece)
-    {
-        if (piece != 0)
-        {
-            SpawnChess(Chess.Decoders.DecodePositionFromInt(position), Chess.Decoders.DecodeBinaryChessType(piece), Chess.Decoders.DecodeBinaryChessColour(piece));
-        }
-    }
-
     
-    private void StartingFEN(string fen)
+    protected void StartingFEN(string fen)
     {
         string[] spawnPositions = fen.Split(' ')[0].Split('/');
 

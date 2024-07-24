@@ -32,6 +32,7 @@ public class LoadElement : MonoBehaviour
         else
         {
             Debug.Log("This game is finished");
+            RewatchGame();
         }
     }
 

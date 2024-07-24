@@ -7,6 +7,7 @@ public class GlobalGameEventManager : MonoBehaviour
 {
     public static CellChooseEvent OnCellChooseEvent = new CellChooseEvent();
     public static ChesChooseEvent OnChesChooseEvent = new ChesChooseEvent();
+    public static UnityEvent OnAllChessDeactivateEvent = new UnityEvent();
 
     public static void ChooseCell(string cell)
     {
@@ -16,6 +17,11 @@ public class GlobalGameEventManager : MonoBehaviour
     public static void ChooseChess(string cell, List<string> path)
     {
         OnChesChooseEvent.Invoke(cell, path);
+    }
+
+    public static void DeactivateAllPiece()
+    {
+        OnAllChessDeactivateEvent.Invoke();
     }
 }
 
