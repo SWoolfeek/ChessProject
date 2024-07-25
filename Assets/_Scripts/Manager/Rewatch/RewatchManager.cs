@@ -14,6 +14,7 @@ public class RewatchManager : MonoBehaviour
     [Header("Ui")] 
     
     [SerializeField] private Slider slider;
+    [SerializeField] private float autoplayDelay;
 
     [Header("Board")] 
     
@@ -24,6 +25,7 @@ public class RewatchManager : MonoBehaviour
     private Dictionary<string, GameObject> _cells;
     private Dictionary<int, Turn> _turns;
     private List<int> keys;
+    private bool _autoPlay;
     
     public static RewatchManager Instance { get; private set; }
 
@@ -47,7 +49,6 @@ public class RewatchManager : MonoBehaviour
         LoadGame();
         slider.maxValue = keys.Count;
         slider.onValueChanged.AddListener (delegate {SliderValueChangeCheck ();});
-
     }
 
     private void LoadGame()
@@ -63,6 +64,7 @@ public class RewatchManager : MonoBehaviour
             keys.Sort((x, y) => x.CompareTo(y));
         }
     }
+    
 
     private void SliderValueChangeCheck()
     {
@@ -77,11 +79,37 @@ public class RewatchManager : MonoBehaviour
     public void NextTurn()
     {
         slider.value++;
+        _autoPlay = false;
     }
     
     public void PreviousTurn()
     {
         slider.value--;
+        _autoPlay = false;
     }
-    
+
+    public void SliderDrag()
+    {
+        _autoPlay = false;
+    }
+
+    public void AutoPlay()
+    {
+        _autoPlay = !_autoPlay;
+        if (_autoPlay)
+        {
+            StartCoroutine(AutoPlayTimer(autoplayDelay));
+        }
+    }
+
+    IEnumerator AutoPlayTimer(float delay)
+    {
+        while (slider.value < slider.maxValue && _autoPlay)
+        {
+            slider.value++;
+            yield return new WaitForSeconds(delay);
+        }
+
+        _autoPlay = false;
+    }
 }
