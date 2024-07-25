@@ -28,7 +28,7 @@ public class LoadElement : MonoBehaviour
         if (_gameState == GameEndings.Unfinished)
         {
             Debug.Log(_saveUId);
-            MenuManager.Instance.LoadGame(_saveUId);
+            MenuManager.Instance.LoadExactGame(_saveUId);
         }
         else
         {

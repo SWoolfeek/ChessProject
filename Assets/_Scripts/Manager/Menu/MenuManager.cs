@@ -4,12 +4,20 @@ using System.Collections.Generic;
 using Settings;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
     [Header("Settings")] 
     
     [SerializeField] private GameSettings gameSettings;
+    
+    [Header("Ui")] 
+    
+    [SerializeField] private GameObject mainMenuWindow;
+    [SerializeField] private GameObject loadWindow;
+    [SerializeField] private GameObject saveContainer;
+    [SerializeField] private Slider slider;
     
     [Header("Buttons")] 
     
@@ -48,7 +56,32 @@ public class MenuManager : MonoBehaviour
     {
         gameSettings.LoadSettings();
     }
+    
+    #region LoadWindow
+    
+    public void LoadExactGame(string gameUId)
+    {
+        gameSettings.PreviousGameUnfinished = true;
+        gameSettings.PreviousGameUId = gameUId;
+        gameSettings.SaveSettings();
+        SceneManager.LoadScene("GameScene");
+    }
 
+    public void BackToMainMenu()
+    {
+        loadWindow.SetActive(false);
+        mainMenuWindow.SetActive(true);
+    }
+
+    public void Slider()
+    {
+        
+    }
+    
+    #endregion
+
+    #region MainMenuWindow
+    
     public void ContinueGame()
     {
         SceneManager.LoadScene("GameScene");
@@ -61,12 +94,10 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene("GameScene");
     }
 
-    public void LoadGame(string gameUId)
+    public void LoadGame()
     {
-        gameSettings.PreviousGameUnfinished = true;
-        gameSettings.PreviousGameUId = gameUId;
-        gameSettings.SaveSettings();
-        SceneManager.LoadScene("GameScene");
+        mainMenuWindow.SetActive(false);
+        loadWindow.SetActive(true);
     }
 
     public void Settings()
@@ -78,4 +109,6 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
+    
+    #endregion
 }
