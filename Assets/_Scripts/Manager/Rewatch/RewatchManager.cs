@@ -76,6 +76,16 @@ public class RewatchManager : MonoBehaviour
         chessGenerationManager.LoadTurn(_turns[turn].FEN);
     }
 
+    public void GetFEN()
+    {
+        TextEditor te = new TextEditor();
+        te.content = new GUIContent(_turns[(int)slider.value].FEN);
+        te.SelectAll();
+        te.Copy();
+    }
+
+    #region RecordControls
+    
     public void NextTurn()
     {
         slider.value++;
@@ -112,4 +122,6 @@ public class RewatchManager : MonoBehaviour
 
         _autoPlay = false;
     }
+    
+    #endregion  
 }
