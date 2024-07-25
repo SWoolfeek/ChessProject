@@ -100,6 +100,7 @@ public class LoadManager : MonoBehaviour
                         loadElement.SetActive(true);
                     }
                 }
+                ReCalculateSizeLoadElements();
                 break;
             case 1:
                 Filter(GameEndings.Unfinished);
@@ -157,6 +158,7 @@ public class LoadManager : MonoBehaviour
 
         _activeLoadElements = childs * loadElementsSize - loadElementsSize;
         Slider();
+        slider.value = 0;
     }
 
     public class LoadData

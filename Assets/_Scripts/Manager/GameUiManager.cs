@@ -22,6 +22,18 @@ public class GameUiManager : MonoBehaviour
     
     [SerializeField] private GameSettings gameSettings;
 
+    private bool _pauseMenuActive;
+
+    #region PauseMenu
+
+    public void PauseMenu()
+    {
+        _pauseMenuActive = !_pauseMenuActive;
+        pauseScreen.SetActive(_pauseMenuActive);
+    }
+
+    #endregion
+    
     #region GameEnd
 
     public void GameFinished()
@@ -41,12 +53,12 @@ public class GameUiManager : MonoBehaviour
         SceneManager.LoadScene("RewatchGameScene");
     }
 
+    #endregion
+
     public void GoToMenu()
     {
         SceneManager.LoadScene("MainMenuScene");
     }
-
-    #endregion
     
     #region Promotion
 
