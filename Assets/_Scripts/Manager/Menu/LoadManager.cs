@@ -46,11 +46,6 @@ public class LoadManager : MonoBehaviour
         }
         
         _dataKeys.Sort((x, y) => y.CompareTo(x));
-
-        foreach (DateTime val in _dataKeys)
-        {
-            Debug.Log(val.ToString());
-        }
     }
 
     private void LoadSave(string fileName)

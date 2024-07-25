@@ -80,6 +80,11 @@ public class RewatchManager : MonoBehaviour
         chessGenerationManager.LoadTurn(_turns[turn].FEN);
     }
 
+    public void MainMenu()
+    {
+        SceneManager.LoadScene("MainMenuScene");
+    }
+
     public void ContinueFromThisTurn()
     {
         _autoPlay = false;

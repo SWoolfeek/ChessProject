@@ -13,11 +13,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GenerateBoardPrefab boardGenerator;
 
     [Header("Ui Elements")]
-    
-    [SerializeField] private GameObject uiCamera;
-
-    [SerializeField] private GameObject whitePromotions;
-    [SerializeField] private GameObject blackPromotions;
 
     [SerializeField] private GameObject loseWindow;
     [SerializeField] private TMP_Text resultText;
@@ -26,6 +21,7 @@ public class GameManager : MonoBehaviour
     
     [SerializeField] private ChessGenerationManager chessGenerationManager;
     [SerializeField] private ChessManager chessManager;
+    [SerializeField] private GameUiManager uiManager;
 
     [Header("Promotions")] 
     
@@ -72,7 +68,12 @@ public class GameManager : MonoBehaviour
         {
             GenerateRandomId idGenerator = new GenerateRandomId();
             GlobalGameVariables.GameId = idGenerator.Generate();
+            GlobalGameVariables.ChessTurn = ChessColour.White;
+            GlobalGameVariables.gameStatus = GameEndings.Unfinished;
+
+            PrecomputedMoveData.BoardRepresentation = new Board();
             
+            Game.Instance.ClearGame();
             Game.Instance.SaveGame();
             gameSettings.PreviousGameUId = GlobalGameVariables.GameId;
             gameSettings.PreviousGameUnfinished = true;
@@ -169,14 +170,12 @@ public class GameManager : MonoBehaviour
         gameSettings.PreviousGameUnfinished = false;
         gameSettings.SaveSettings();
         
-        loseWindow.SetActive(true);
+        uiManager.GameFinished();
         
     }
 
     public void TurnMade(bool promotionWasMade, bool captureWasMade, int promotionPosition)
     {
-        Debug.Log("Turn " + _turn);
-
         if (captureWasMade)
         {
             _lastCapture = _turn + 1;
@@ -186,27 +185,11 @@ public class GameManager : MonoBehaviour
         {
             _lastCapture = _turn + 1;
             _promotionPosition = promotionPosition;
-            Promotion();
+            uiManager.Promotion(GlobalGameVariables.ChessTurn);
         }
         else
         {
             EndTurn();
-        }
-        
-              
-    }
-
-    private void Promotion()
-    {
-        uiCamera.SetActive(true);
-        
-        if (GlobalGameVariables.ChessTurn == ChessColour.White)
-        {
-            whitePromotions.SetActive(true);
-        }
-        else
-        {
-            blackPromotions.SetActive(true);
         }
     }
 
@@ -219,45 +202,11 @@ public class GameManager : MonoBehaviour
         chessManager.GenerateNextMovements(_turn, _lastCapture);
     }
 
-    private void PromotionEnded()
+    public void PromotionResult(ChessType inputChessType)
     {
-        uiCamera.SetActive(false);
-        whitePromotions.SetActive(false);
-        blackPromotions.SetActive(false);
-
+        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition,inputChessType , GlobalGameVariables.ChessTurn);
+        chessManager.PawnPromotion(_promotionPosition, inputChessType);
         EndTurn();
     }
-
-    #region PromotionButtons
-
-    public void QueenPromotion()
-    {
-        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Queen, GlobalGameVariables.ChessTurn);
-        chessManager.PawnPromotion(_promotionPosition, ChessType.Queen);
-        PromotionEnded();
-    }
-    
-    public void RookPromotion()
-    {
-        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Rook, GlobalGameVariables.ChessTurn);
-        chessManager.PawnPromotion(_promotionPosition, ChessType.Rook);
-        PromotionEnded();
-    }
-    
-    public void BishopPromotion()
-    {
-        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Bishop, GlobalGameVariables.ChessTurn);
-        chessManager.PawnPromotion(_promotionPosition, ChessType.Bishop);
-        PromotionEnded();
-    }
-    
-    public void KnightPromotion()
-    {
-        PrecomputedMoveData.BoardRepresentation.PromotePawn(_promotionPosition, ChessType.Knight, GlobalGameVariables.ChessTurn);
-        chessManager.PawnPromotion(_promotionPosition, ChessType.Knight);
-        PromotionEnded();
-    }
-
-    #endregion
     
 }
