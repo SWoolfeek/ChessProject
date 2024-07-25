@@ -13,6 +13,11 @@ namespace Recording
         public static Game Instance = new Game();
         private Dictionary<int, Turn> turns = new Dictionary<int, Turn>();
 
+        public void ClearGame()
+        {
+            turns = new Dictionary<int, Turn>();
+        }
+        
         public void AddTurn(int turnNumber, Turn turnRecord)
         {
             turns[turnNumber] = turnRecord;

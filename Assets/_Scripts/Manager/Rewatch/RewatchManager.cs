@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Recording;
+using Settings;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class RewatchManager : MonoBehaviour
 {
-    // Delete after testing.
-    public string loadGameForTesting;
     [Header("Ui")] 
     
     [SerializeField] private Slider slider;
@@ -20,6 +20,10 @@ public class RewatchManager : MonoBehaviour
     
     [SerializeField] private ChessGenerationRewatch chessGenerationManager;
     [SerializeField] private GenerateBoardPrefab boardGenerator;
+
+    [Header("Settings")] 
+    
+    [SerializeField] private GameSettings gameSettings;
     
     private SaveData _loadedGame;
     private Dictionary<string, GameObject> _cells;
@@ -53,10 +57,10 @@ public class RewatchManager : MonoBehaviour
 
     private void LoadGame()
     {
-        if(File.Exists("Saves/" + loadGameForTesting + ".json"))
+        if(File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
         {
             _loadedGame =
-                JsonUtility.FromJson<SaveData>(File.ReadAllText("Saves/" + loadGameForTesting + ".json"));
+                JsonUtility.FromJson<SaveData>(File.ReadAllText("Saves/" + GlobalGameVariables.GameId + ".json"));
             _turns = _loadedGame.ToDictionary();
             Debug.Log(_turns[1].FEN);
             chessGenerationManager.StartChessGenerationRewatch(_turns[1].FEN);
@@ -76,8 +80,41 @@ public class RewatchManager : MonoBehaviour
         chessGenerationManager.LoadTurn(_turns[turn].FEN);
     }
 
+    public void ContinueFromThisTurn()
+    {
+        _autoPlay = false;
+        
+        if ((int)slider.maxValue != (int)slider.value || _loadedGame.gameEnds == GameEndings.Unfinished)
+        {
+            CreateNewSave((int)slider.value);
+        }
+    }
+
+    private void CreateNewSave(int lastTurn)
+    {
+        Game.Instance.ClearGame();
+        
+        for (int i = 1; i < lastTurn + 1; i++)
+        {
+            Game.Instance.AddTurn(i,_turns[i]);
+        }
+
+        GenerateRandomId idGenerator = new GenerateRandomId();
+        GlobalGameVariables.GameId = idGenerator.Generate();
+        GlobalGameVariables.gameStatus = GameEndings.Unfinished;
+        Game.Instance.SaveGame();
+
+        gameSettings.PreviousGameUId = GlobalGameVariables.GameId;
+        gameSettings.PreviousGameUnfinished = true;
+        gameSettings.SaveSettings();
+
+        SceneManager.LoadScene("GameScene");
+    }
+
     public void GetFEN()
     {
+        _autoPlay = false;
+        
         TextEditor te = new TextEditor();
         te.content = new GUIContent(_turns[(int)slider.value].FEN);
         te.SelectAll();

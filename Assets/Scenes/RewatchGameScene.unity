@@ -2856,6 +2856,7 @@ MonoBehaviour:
   autoplayDelay: 0.75
   chessGenerationManager: {fileID: 1969315706}
   boardGenerator: {fileID: 476179907}
+  gameSettings: {fileID: 11400000, guid: 6decf1b3f8b0d89479f4c351417a5e10, type: 2}
 --- !u!1001 &822755584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3146,7 +3147,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 911400451}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 821702733}
+        m_TargetAssemblyTypeName: RewatchManager, Assembly-CSharp
+        m_MethodName: GetFEN
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &911400451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7796,7 +7809,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2138464923}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 821702733}
+        m_TargetAssemblyTypeName: RewatchManager, Assembly-CSharp
+        m_MethodName: ContinueFromThisTurn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2138464923
 MonoBehaviour:
   m_ObjectHideFlags: 0

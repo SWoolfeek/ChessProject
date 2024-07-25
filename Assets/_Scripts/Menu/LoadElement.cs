@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Recording;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LoadElement : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class LoadElement : MonoBehaviour
 
     public void RewatchGame()
     {
-        
+        GlobalGameVariables.GameId = _saveUId;
+        SceneManager.LoadScene("RewatchGameScene");
     }
 }
