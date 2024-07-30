@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
             PrecomputedMoveData.BoardRepresentation = new Board();
             
             Game.Instance.ClearGame();
-            Game.Instance.SaveGame();
+            //Game.Instance.SaveGame();
             gameSettings.PreviousGameUId = GlobalGameVariables.GameId;
             gameSettings.PreviousGameUnfinished = true;
             gameSettings.SaveSettings();
