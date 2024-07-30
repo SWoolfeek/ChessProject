@@ -13,7 +13,6 @@ public class LoadManager : MonoBehaviour
     
     
     [SerializeField] private GameObject loadElementsParent;
-    [SerializeField] private TMP_Dropdown dropdown;
     [SerializeField][Min(0)] private int loadElementHeight;
     [SerializeField] private VerticalLayoutGroup saveContainer;
     [SerializeField] private Slider slider;
@@ -89,8 +88,7 @@ public class LoadManager : MonoBehaviour
 
     public void FilterLoaded(int input)
     {
-        Debug.Log(input);
-        switch (dropdown.value)
+        switch (input)
         {
             case 0:
                 foreach (GameEndings key in _loadElements.Keys)
