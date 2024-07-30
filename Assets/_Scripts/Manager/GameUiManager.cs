@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Settings;
@@ -23,6 +24,14 @@ public class GameUiManager : MonoBehaviour
     [SerializeField] private GameSettings gameSettings;
 
     private bool _pauseMenuActive;
+
+    private void Update()
+    {
+        if (Input.GetKeyDown("escape"))
+        {
+            PauseMenu();
+        }
+    }
 
     #region PauseMenu
 
