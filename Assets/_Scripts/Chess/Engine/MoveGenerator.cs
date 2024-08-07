@@ -298,7 +298,15 @@ namespace Chess
                 {
                     if (BoardRepresentation.board[targetCell] == 0)
                     {
-                        targetPositions.Add( (new Move(startingPosition, targetCell)));
+                        if (IsLastCellForTeam(chessTeam, targetCell))
+                        {
+                            targetPositions.Add( (new Move(startingPosition, targetCell,false,true)));
+                        }
+                        else
+                        {
+                            targetPositions.Add( (new Move(startingPosition, targetCell)));
+                        }
+                        
                     }
 
                     if (NumCellsToEdge[targetCell][chessTeam] > 0)
@@ -324,12 +332,26 @@ namespace Chess
                                              pawnAttackDirections[chessTeam][j]];
                             if (Decoders.DecodeBinaryChessColour(BoardRepresentation.board[targetCell]) != team && BoardRepresentation.board[targetCell] != 0)
                             {
-                                targetPositions.Add( (new Move(startingPosition, targetCell)));
+                                if (IsLastCellForTeam(chessTeam, targetCell))
+                                {
+                                    targetPositions.Add( (new Move(startingPosition, targetCell,false,true)));
+                                }
+                                else
+                                {
+                                    targetPositions.Add( (new Move(startingPosition, targetCell)));
+                                }
+                                
                             }
                             else if (BoardRepresentation.enPassantCapturePosition > -1 && targetCell == BoardRepresentation.enPassantCapturePosition)
                             {
-                                Debug.Log("EnPassant - " + BoardRepresentation.enPassantCapturePosition);
-                                targetPositions.Add( (new Move(startingPosition, targetCell, false,false, BoardRepresentation.enPassantPawnPosition)));
+                                if (IsLastCellForTeam(chessTeam, targetCell))
+                                {
+                                    targetPositions.Add( (new Move(startingPosition, targetCell,false,true, BoardRepresentation.enPassantPawnPosition)));
+                                }
+                                else
+                                {
+                                    targetPositions.Add( (new Move(startingPosition, targetCell, false,false, BoardRepresentation.enPassantPawnPosition)));
+                                }
                             }
                         }
                     }
@@ -339,14 +361,40 @@ namespace Chess
                         _pawnMoves[startingPosition] = targetPositions.ToArray();
                     }
                 }
-                else
+                /*else
                 {
                     targetPositions.Add( (new Move(startingPosition, startingPosition, false,true)));
                     _pawnMoves[startingPosition] = targetPositions.ToArray();
-                }
+                }*/
                 
             }
             
+        }
+
+        private bool IsLastCellForTeam(int chessTeam, int targetCell)
+        {
+            if (chessTeam == 0)
+            {
+                if (targetCell > 55)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (targetCell < 8)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         private void GenerateKnightMoves(int chessTeam)
