@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Recording;
 using Settings;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -65,6 +66,11 @@ public class MenuManager : MonoBehaviour
         gameSettings.PreviousGameUId = gameUId;
         gameSettings.SaveSettings();
         SceneManager.LoadScene("GameScene");
+    }
+
+    public void DeleteSave(string gameUId, GameObject saveElement, GameEndings gameState)
+    {
+        loadManager.DeleteSave(gameUId, saveElement, gameState);
     }
 
     public void BackToMainMenu()

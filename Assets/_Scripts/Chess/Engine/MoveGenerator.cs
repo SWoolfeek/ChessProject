@@ -361,11 +361,6 @@ namespace Chess
                         _pawnMoves[startingPosition] = targetPositions.ToArray();
                     }
                 }
-                /*else
-                {
-                    targetPositions.Add( (new Move(startingPosition, startingPosition, false,true)));
-                    _pawnMoves[startingPosition] = targetPositions.ToArray();
-                }*/
                 
             }
             

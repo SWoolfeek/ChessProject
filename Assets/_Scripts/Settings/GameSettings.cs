@@ -12,6 +12,10 @@ namespace Settings
         
         public bool PreviousGameUnfinished = false;
         public string PreviousGameUId;
+
+        private string _directoryName = "Saves";
+        private string _fileName = "GameSettings.json";
+        private string _filePath;
         
         public enum TimersType
         {
@@ -26,13 +30,18 @@ namespace Settings
 
             data.PreviousGameUnfinished = PreviousGameUnfinished;
             data.PreviousGameUId = PreviousGameUId;
-            
-            if (File.Exists("Saves/GameSettings.json"))
+
+            if (!Directory.Exists(_directoryName))
             {
-                File.WriteAllText("Saves/GameSettings.json", String.Empty);
+                Directory.CreateDirectory(_directoryName);
             }
             
-            var file = File.CreateText("Saves/GameSettings.json");
+            if (File.Exists(_filePath))
+            {
+                File.WriteAllText(_filePath, String.Empty);
+            }
+            
+            var file = File.CreateText(_filePath);
             file.WriteLine(JsonUtility.ToJson(data));
             
             file.Close();
@@ -40,15 +49,17 @@ namespace Settings
 
         public void LoadSettings()
         {
-            if(!File.Exists("Saves/GameSettings.json"))
+            _filePath = Path.Combine(_directoryName, _fileName);
+            
+            if(!File.Exists(_filePath))
             {
                 SaveSettings();
             }
             SavedGameSettings data =
-                JsonUtility.FromJson<SavedGameSettings>(File.ReadAllText("Saves/GameSettings.json"));
+                JsonUtility.FromJson<SavedGameSettings>(File.ReadAllText(_filePath));
 
 
-            if (File.Exists("Saves/" + data.PreviousGameUId + ".json"))
+            if (File.Exists(Path.Combine(_directoryName, data.PreviousGameUId + ".json")))
             {
                 PreviousGameUnfinished = data.PreviousGameUnfinished;
                 PreviousGameUId = data.PreviousGameUId;

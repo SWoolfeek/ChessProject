@@ -200,12 +200,7 @@ public class ChessManager : MonoBehaviour
         Material material = possiblePositionObject.transform.GetComponentsInChildren<Transform>(true)[1]
             .GetComponent<MeshRenderer>().material;
 
-        if (promotion)
-        {
-            material.color = possibleTurnColor;
-            material.SetColor("_EmissionColor", possibleTurnEmission);
-        }
-        else if (piece > 0)
+        if (piece > 0)
         {
             material.color = possibleEliminationColor;
             material.SetColor("_EmissionColor", possibleEliminationEmission);
@@ -233,11 +228,6 @@ public class ChessManager : MonoBehaviour
     private void ShowPossibleTurn(Move movement)
     {
         string cellPosition = Decoders.DecodePositionFromInt(movement.TargetPosition);
-        /*if (movement.Promotion)
-        {
-            Debug.Log("Show possible Promotion");
-            cellPosition = PawnPromotionPosition(movement);
-        }*/
         
         
         if (_inactivePossibleTurnObjects.Count > 0)

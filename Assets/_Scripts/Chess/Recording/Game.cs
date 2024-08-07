@@ -12,6 +12,7 @@ namespace Recording
     {
         public static Game Instance = new Game();
         private Dictionary<int, Turn> turns = new Dictionary<int, Turn>();
+        private string _directoryName = "Saves";
 
         public void ClearGame()
         {
@@ -40,14 +41,16 @@ namespace Recording
             data.FromDictionary(turns);
             data.gameEnds = GlobalGameVariables.gameStatus;
             data.dateLastTurn = DateTime.Now.ToString();
+
+            string savePath = Path.Combine(_directoryName,GlobalGameVariables.GameId + ".json");
             
-            if (File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
+            if (File.Exists(savePath))
             {
-                File.WriteAllText("Saves/" + GlobalGameVariables.GameId + ".json", String.Empty);
+                File.WriteAllText(savePath, String.Empty);
             }
             
             
-            var file = File.CreateText("Saves/" + GlobalGameVariables.GameId + ".json");
+            var file = File.CreateText(savePath);
             file.WriteLine(JsonUtility.ToJson(data));
             
             file.Close();
@@ -56,10 +59,12 @@ namespace Recording
 
         public void LoadGame()
         {
-            if(File.Exists("Saves/" + GlobalGameVariables.GameId + ".json"))
+            string savePath = Path.Combine(_directoryName,GlobalGameVariables.GameId + ".json");
+            
+            if(File.Exists(savePath))
             {
                 SaveData data =
-                    JsonUtility.FromJson<SaveData>(File.ReadAllText("Saves/" + GlobalGameVariables.GameId + ".json"));
+                    JsonUtility.FromJson<SaveData>(File.ReadAllText(savePath));
 
                 turns = data.ToDictionary();
             }

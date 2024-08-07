@@ -42,4 +42,9 @@ public class LoadElement : MonoBehaviour
         GlobalGameVariables.GameId = _saveUId;
         SceneManager.LoadScene("RewatchGameScene");
     }
+
+    public void DeleteSave()
+    {
+        MenuManager.Instance.DeleteSave(_saveUId, this.gameObject, _gameState);
+    }
 }

@@ -34,6 +34,7 @@ public class LoadManager : MonoBehaviour
     private float _activeLoadElements;
     private Transform saveContainerTransform;
     private RectTransform saveContainerRectTransform;
+    private string _directoryName = "Saves";
     
     // Start is called before the first frame update
     public void StartLoadManager()
@@ -60,7 +61,7 @@ public class LoadManager : MonoBehaviour
 
     private void LoadAllSaves()
     {
-        foreach (string file in Directory.GetFiles("Saves", "*.json"))
+        foreach (string file in Directory.GetFiles(_directoryName, "*.json"))
         {
             string fileName = file.Split("\\")[1];
             if (fileName != "GameSettings.json")
@@ -74,16 +75,30 @@ public class LoadManager : MonoBehaviour
 
     private void LoadSave(string fileName)
     {
-        if(File.Exists("Saves/" + fileName))
+        string savePath = Path.Combine(_directoryName, fileName);
+        if(File.Exists(savePath))
         {
             SaveData data =
-                JsonUtility.FromJson<SaveData>(File.ReadAllText("Saves/" + fileName));
+                JsonUtility.FromJson<SaveData>(File.ReadAllText(savePath));
             
             _dataKeys.Add(DateTime.Parse(data.dateLastTurn));
 
             LoadData loadData = new LoadData(fileName.Split(".json")[0], data.gameEnds, data.turnsAmount);
             _loadDatas[data.dateLastTurn] = loadData;
         }
+    }
+
+    public void DeleteSave(string gameUId, GameObject saveElement, GameEndings gameState)
+    {
+        string savePath = Path.Combine(_directoryName, gameUId + ".json");
+        
+        if (File.Exists(savePath))
+        {
+            File.Delete(savePath);
+        }
+
+        _loadElements[gameState].Remove(saveElement);
+        Destroy(saveElement);
     }
 
     public void FilterLoaded(int input)
