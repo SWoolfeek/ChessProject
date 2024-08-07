@@ -5942,7 +5942,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1668863576
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6907,7 +6907,7 @@ MonoBehaviour:
   loadWindow: {fileID: 236404323}
   saveContainer: {fileID: 1196036781}
   slider: {fileID: 1017158818}
-  continueButton: {fileID: 1857520743}
+  continueButton: {fileID: 1668863575}
   loadManager: {fileID: 1441104724}
 --- !u!1 &2059692235
 GameObject:

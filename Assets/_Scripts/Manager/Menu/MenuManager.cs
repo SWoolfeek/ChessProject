@@ -51,6 +51,11 @@ public class MenuManager : MonoBehaviour
     private void Start()
     {
         loadManager.StartLoadManager();
+        
+        if (gameSettings.PreviousGameUnfinished)
+        {
+            continueButton.SetActive(true);
+        }
     }
 
     private void LoadSettings()
