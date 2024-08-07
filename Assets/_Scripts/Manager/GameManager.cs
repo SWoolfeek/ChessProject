@@ -83,6 +83,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            PrecomputedMoveData.BoardRepresentation = new Board();
             GlobalGameVariables.GameId = gameSettings.PreviousGameUId;
             Game.Instance.LoadGame();
             LoadGame();

@@ -24,6 +24,7 @@ public class GameUiManager : MonoBehaviour
     [SerializeField] private GameSettings gameSettings;
 
     private bool _pauseMenuActive;
+    private bool _gameFinished;
 
     private void Update()
     {
@@ -37,8 +38,11 @@ public class GameUiManager : MonoBehaviour
 
     public void PauseMenu()
     {
-        _pauseMenuActive = !_pauseMenuActive;
-        pauseScreen.SetActive(_pauseMenuActive);
+        if (!_gameFinished)
+        {
+            _pauseMenuActive = !_pauseMenuActive;
+            pauseScreen.SetActive(_pauseMenuActive);
+        }
     }
 
     #endregion
@@ -48,6 +52,7 @@ public class GameUiManager : MonoBehaviour
     public void GameFinished()
     {
         loseScreen.SetActive(true);
+        _gameFinished = true;
     }
 
     public void RestartTheGame()
